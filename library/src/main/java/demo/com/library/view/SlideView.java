@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import demo.com.library.LLog;
@@ -54,11 +55,16 @@ public class SlideView extends View {
     private MyGestureListener gestureListener;
     //触屏检测
     private GestureDetectorCompat detectorCompat;
+    //设置点击菜单栏监听 -- 提供给外部使用
+    OnClickListener onClickListener;
+    public void setMenuOnClickListener(OnClickListener listener){
+        onClickListener = listener;
+    }
     //滑动效果的动画
     ObjectAnimator animator = ObjectAnimator.ofFloat(this,"scaleRatioX",1f);
 
+    //动画是否开始
     boolean isAnimatorStart = false;
-    //结束监听
 
     //水平方向的缩放比例
     float scaleRatioX = 1.0f;
@@ -117,10 +123,16 @@ public class SlideView extends View {
      * 菜单背景的高度
      */
     int menuBackgroundHeight;
+    /**
+     * 菜单是否是展开状态，用于判断点击事件
+     */
+    boolean isMenuExpand = false;
     List<String> menuString = new ArrayList<>();
     List<Integer> menuColor = new ArrayList<>();
     List<Float> menuAspect = new ArrayList<>();
     List<Integer> menuTextSize = new ArrayList<>();
+    //存储菜单背景的范围
+    List<HashMap<String,Integer>> menuBackgroundOffsets = new ArrayList<>();
 
     public SlideView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -185,7 +197,10 @@ public class SlideView extends View {
         paintMessage.setTextSize(messageTextSize);
         //初始化点击监听
         gestureListener = new MyGestureListener();
+            //设置滑动点击
         detectorCompat = new GestureDetectorCompat(context,gestureListener);
+            //设置双手点击[实际使用只用单手]
+        detectorCompat.setOnDoubleTapListener(gestureListener);
         //动画结束监听
         animator.addListener(new Animator.AnimatorListener() {
             @Override
@@ -196,6 +211,8 @@ public class SlideView extends View {
             @Override
             public void onAnimationEnd(Animator animation) {
                 isAnimatorStart = false;
+                //scaleRatioX 为 0 时，表示展开
+                isMenuExpand = Util.isFloatEqual(scaleRatioX, 0f);
             }
 
             @Override
@@ -251,6 +268,7 @@ public class SlideView extends View {
 
         //缩放[!如果放在for循环中会有细节上的问题]
         canvas.scale(1 - scaleRatioX, 1,getWidth(),getHeight()>>1);
+        menuBackgroundOffsets = new ArrayList<>();
         for(int i = 0;i < menuString.size();i++){
             //菜单背景的宽度
             menuBackgroundWidth = (int)((float)menuBackgroundHeight * menuAspect.get(i));
@@ -263,6 +281,13 @@ public class SlideView extends View {
             menuBackgroundOffsetX = getWidth() - menuBackgroundWidthUsed;
 
             paintBackground3.setColor(menuColor.get(i));
+            //存储一下背景的数据，点击的时候用到
+//            List<HashMap<String,Integer>> menuBackgroundOffset = new ArrayList<>();
+            HashMap<String,Integer> map = new HashMap<>();
+            map.put("XS", menuBackgroundOffsetX);
+            map.put("XE", menuBackgroundOffsetX + menuBackgroundWidth);
+            menuBackgroundOffsets.add(map);
+            //绘制背景
             canvas.drawRect(menuBackgroundOffsetX,0,menuBackgroundOffsetX + menuBackgroundWidth,menuBackgroundHeight,paintBackground3);
             paintBackground3.reset();
 
@@ -281,7 +306,7 @@ public class SlideView extends View {
         return detectorCompat.onTouchEvent(event);
     }
 
-    public class MyGestureListener implements GestureDetector.OnGestureListener{
+    public class MyGestureListener implements GestureDetector.OnGestureListener,GestureDetector.OnDoubleTapListener{
 
         public boolean onDown(MotionEvent e) {
             LLog.d(TAG,"down " + e.getX());
@@ -327,6 +352,37 @@ public class SlideView extends View {
         }
 
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            return false;
+        }
+
+        //确定是单击
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            //展开的情况才判断
+            if(isMenuExpand){
+                for(int i = 0; i < menuBackgroundOffsets.size();i++){
+                    HashMap<String,Integer> map = new HashMap<>();
+                    map = menuBackgroundOffsets.get(i);
+                    if(map !=null){
+                        int X1 = map.get("XS");
+                        int X2 = map.get("XE");
+                        if( e.getX() > X1 && e.getX() < X2){
+                            Util.toast("点击：" + menuString.get(i));
+                        }
+                    }
+                }
+
+            }
+            return false;
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            return false;
+        }
+
+        @Override
+        public boolean onDoubleTapEvent(MotionEvent e) {
             return false;
         }
     }

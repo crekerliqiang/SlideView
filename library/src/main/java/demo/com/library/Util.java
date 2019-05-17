@@ -1,6 +1,5 @@
 package demo.com.library;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -60,6 +59,16 @@ public class Util {
             }
         }
         return null;
+    }
+
+    /**
+     * 判断两个float类型的数据是否相等
+     * @param src
+     * @param dest
+     * @return
+     */
+    public static boolean isFloatEqual(float src,float dest){
+        return Math.abs(src - dest) < 0.000001f;
     }
 
 }
