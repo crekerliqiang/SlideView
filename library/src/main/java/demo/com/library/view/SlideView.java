@@ -176,7 +176,7 @@ public class SlideView extends View {
 
         typedArray.recycle();
         //设置动画时间
-        animator.setDuration(2000);
+        animator.setDuration(800);
         //Title文字规则
         paintTitle.setColor(messageTextColor);
         paintTitle.setTextSize(titleTextSize);
@@ -248,8 +248,10 @@ public class SlideView extends View {
         canvas.drawText(messageText,messageTextOffsetX,messageTextOffsetY,paintMessage);
         canvas.restore();
         //绘制菜单区域
+
+        //缩放[!如果放在for循环中会有细节上的问题]
+        canvas.scale(1 - scaleRatioX, 1,getWidth(),getHeight()>>1);
         for(int i = 0;i < menuString.size();i++){
-            canvas.scale(1 - scaleRatioX, 1,getWidth(),getHeight()>>1);
             //菜单背景的宽度
             menuBackgroundWidth = (int)((float)menuBackgroundHeight * menuAspect.get(i));
             //记录背景已经使用了的长度
