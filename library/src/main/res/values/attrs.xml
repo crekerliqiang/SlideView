@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="MyTextView">
+        <attr name="my_view_color" format="integer"/>
+    </declare-styleable>
+
+    <declare-styleable name="SlideView">
+
+        <!--头像-->
+        <attr name="image_src" format="reference"/>
+        <attr name="image_margin_start" format="dimension"/>
+        <attr name="image_slide_length" format="dimension"/>
+
+        <!--Title-->
+        <attr name="title_text" format="string"/>
+        <attr name="title_text_size" format="dimension"/>
+        <attr name="title_text_color" format="reference"/>
+        <attr name="title_text_margin_start" format="dimension"/>
+
+        <!--Message-->
+        <attr name="message_text" format="string"/>
+        <attr name="message_text_size" format="dimension"/>
+        <attr name="message_text_color" format="reference"/>
+        <attr name="message_text_margin_start" format="dimension"/>
+
+    </declare-styleable>
+
+
+
+</resources>
