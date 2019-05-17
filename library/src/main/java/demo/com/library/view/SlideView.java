@@ -23,6 +23,10 @@ import demo.com.library.Util;
 
 import static demo.com.library.Constants.IMAGE_MARGIN_START_DEFAULT;
 import static demo.com.library.Constants.IMAGE_SLIDE_LEN_DEFAULT;
+import static demo.com.library.Constants.MENU_ASPECT_DEFAULT;
+import static demo.com.library.Constants.MENU_A_BACKGROUND_DEFAULT;
+import static demo.com.library.Constants.MENU_B_BACKGROUND_DEFAULT;
+import static demo.com.library.Constants.MENU_TEXT_SIZE_DEFAULT;
 import static demo.com.library.Constants.MESSAGE_MARGIN_START_DEFAULT;
 import static demo.com.library.Constants.MESSAGE_SIZE_DEFAULT;
 import static demo.com.library.Constants.MESSAGE_TEXT_DEFAULT;
@@ -52,6 +56,7 @@ public class SlideView extends View {
     private GestureDetectorCompat detectorCompat;
     //滑动效果的动画
     ObjectAnimator animator = ObjectAnimator.ofFloat(this,"scaleRatioX",1f);
+
     boolean isAnimatorStart = false;
     //结束监听
 
@@ -101,6 +106,10 @@ public class SlideView extends View {
      */
     int menuBackgroundOffsetX;
     /**
+     * 菜单的背景 X 方向已经使用了的宽度
+     */
+    int menuBackgroundWidthUsed = 0;
+    /**
      * 菜单背景的宽度
      */
     int menuBackgroundWidth;
@@ -110,12 +119,8 @@ public class SlideView extends View {
     int menuBackgroundHeight;
     List<String> menuString = new ArrayList<>();
     List<Integer> menuColor = new ArrayList<>();
-    public void putMenuString(List<String> menuString){
-        this.menuString = menuString;
-    }
-    public void putMenuColor(List<Integer> menuColor){
-        this.menuColor = menuColor;
-    }
+    List<Float> menuAspect = new ArrayList<>();
+    List<Integer> menuTextSize = new ArrayList<>();
 
     public SlideView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -144,11 +149,34 @@ public class SlideView extends View {
         if(messageText == null)messageText = MESSAGE_TEXT_DEFAULT;
         messageTextSize = typedArray.getDimensionPixelSize(R.styleable.SlideView_message_text_size,MESSAGE_SIZE_DEFAULT);
         messageTextColor = typedArray.getColor(R.styleable.SlideView_message_text_color, TEXT_COLOR_DEFAULT);;
-        messageTextMarginStart = typedArray.getDimensionPixelSize(R.styleable.SlideView_message_text_margin_start,MESSAGE_MARGIN_START_DEFAULT);;
+        messageTextMarginStart = typedArray.getDimensionPixelSize(R.styleable.SlideView_message_text_margin_start,MESSAGE_MARGIN_START_DEFAULT);
+        //4 Menu a
+        String menuString = typedArray.getString(R.styleable.SlideView_menu_a_text);
+        int menuColor = typedArray.getColor(R.styleable.SlideView_menu_a_background,MENU_A_BACKGROUND_DEFAULT);
+        float menuAspect = typedArray.getFloat(R.styleable.SlideView_menu_a_aspect,MENU_ASPECT_DEFAULT);
+        int menuTextSize = typedArray.getDimensionPixelSize(R.styleable.SlideView_menu_a_text_size,MENU_TEXT_SIZE_DEFAULT);
+        if(menuString != null){
+            this.menuString.add(menuString);
+            this.menuColor.add(menuColor);
+            this.menuAspect.add(menuAspect);
+            this.menuTextSize.add(menuTextSize);
+        }
 
-
+        // 5 Menu b
+        menuString = typedArray.getString(R.styleable.SlideView_menu_b_text);
+        menuColor = typedArray.getColor(R.styleable.SlideView_menu_b_background,MENU_B_BACKGROUND_DEFAULT);
+        menuAspect = typedArray.getFloat(R.styleable.SlideView_menu_b_aspect,MENU_ASPECT_DEFAULT);
+        menuTextSize = typedArray.getDimensionPixelSize(R.styleable.SlideView_menu_b_text_size,MENU_TEXT_SIZE_DEFAULT);
+        if(menuString != null){
+            this.menuString.add(menuString);
+            this.menuColor.add(menuColor);
+            this.menuAspect.add(menuAspect);
+            this.menuTextSize.add(menuTextSize);
+        }
 
         typedArray.recycle();
+        //设置动画时间
+        animator.setDuration(2000);
         //Title文字规则
         paintTitle.setColor(messageTextColor);
         paintTitle.setTextSize(titleTextSize);
@@ -188,7 +216,7 @@ public class SlideView extends View {
         titleViewHeight = (int)((float)getHeight() * TITLE_HEIGHT);
         messageViewHeight = getHeight() - titleViewHeight;
         //title x y 的坐标
-        titleTextOffsetX = TEXT_OFFSET_X + bitmap.getWidth() + titleTextMarginStart;
+        titleTextOffsetX = TEXT_OFFSET_X + bitmap.getWidth() + titleTextMarginStart + (int)imageMarginStart;
         titleTextOffsetY = (titleViewHeight + titleTextSize)/2 - TEXT_OFFSET_Y;
         //对Title的文本长度做限制
         int mostTextSize = (int)((getWidth() - titleTextOffsetX)*TEXT_MAX_RATIO);
@@ -203,17 +231,15 @@ public class SlideView extends View {
         if(messageTextSize * messageText.length() > mostTextSize){
             messageText = Util.cutText(messageText,messageTextSize,mostTextSize);
         }
-        //菜单的背景宽度和高度 [正方形]
-        menuBackgroundWidth = getHeight();
+        //菜单的背景宽度和高度 [高度默认]
         menuBackgroundHeight = getHeight();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-//        canvas.scale(1 + scaleRatioX * 2, 1,0,getHeight()>>1);
         canvas.save();
         //移动
-        canvas.translate(menuString.size() * menuBackgroundWidth * ( 1 * scaleRatioX - 1f),0);
+        canvas.translate(menuString.size() * menuBackgroundWidth * (scaleRatioX - 1f) * 0.7f,0);
         //绘制 image
         if(isDrawBitmap)canvas.drawBitmap(bitmap,imageMarginStart, (getHeight() - bitmap.getHeight())>>1, paintTitle);
         //绘制 title
@@ -224,19 +250,28 @@ public class SlideView extends View {
         //绘制菜单区域
         for(int i = 0;i < menuString.size();i++){
             canvas.scale(1 - scaleRatioX, 1,getWidth(),getHeight()>>1);
-            //设置为正方形 所以长宽相等
-            menuBackgroundOffsetX = getWidth() - menuBackgroundWidth * (i+1);
+            //菜单背景的宽度
+            menuBackgroundWidth = (int)((float)menuBackgroundHeight * menuAspect.get(i));
+            //记录背景已经使用了的长度
+            menuBackgroundWidthUsed += menuBackgroundWidth;
+
+            LLog.d(TAG,"WidthUsed " + menuBackgroundWidthUsed + "  BackgroundWidth  " + menuBackgroundWidth);
+
+            //根据已经使用了的长度计算偏移
+            menuBackgroundOffsetX = getWidth() - menuBackgroundWidthUsed;
+
             paintBackground3.setColor(menuColor.get(i));
             canvas.drawRect(menuBackgroundOffsetX,0,menuBackgroundOffsetX + menuBackgroundWidth,menuBackgroundHeight,paintBackground3);
             paintBackground3.reset();
 
-            int textSize = (int)Util.spToPixel(28);
+            int textSize = menuTextSize.get(i);
             paintMenu.setTextSize(textSize);
             menuTextOffsetX = menuBackgroundOffsetX + (menuBackgroundWidth - menuString.get(i).length() * textSize)/2;
             menuTextOffsetY = (menuBackgroundHeight + textSize)/2;
             canvas.drawText(menuString.get(i), menuTextOffsetX + TEXT_OFFSET_X,
                     menuTextOffsetY - TEXT_OFFSET_Y, paintMenu);
         }
+        menuBackgroundWidthUsed = 0;
     }
 
     @Override
@@ -266,7 +301,8 @@ public class SlideView extends View {
             scaleRatioX = scaleRatioX - distanceX/getWidth();
             if(scaleRatioX < 0f)scaleRatioX = 0f;
             if(scaleRatioX > 1f)scaleRatioX = 1f;
-            LLog.d(TAG,"dx " + distanceX + " scale " + s + ":" + scaleRatioX );
+
+//            LLog.d(TAG,"dx " + distanceX + " scale " + s + ":" + scaleRatioX );
 
             //1.(scaleX > hold && 右滑) --> 动画：scaleX = hold:1
             if(scaleRatioX > SCALE_RATIO_RIGHT_X_THRESHOLD && distanceX < 0 && !isAnimatorStart && Math.abs(scaleRatioX - 1.0f) > 0.1f){

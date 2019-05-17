@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">library</string>
     <string name="title">这是一个学习交流群，哈哈哈哈哈哈哈哈</string>
-    <string name="message">强哥：这个问题哪位大佬遇到过，求大腿啊啊啊啊啊啊啊</string>
+    <string name="message">李强：这个问题哪位大佬会，求大腿啊啊啊啊啊啊啊</string>
+    <string name="delete">删除</string>
+    <string name="set">设为未读</string>
 </resources>

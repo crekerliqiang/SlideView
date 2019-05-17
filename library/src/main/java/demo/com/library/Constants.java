@@ -4,7 +4,7 @@ import android.graphics.Color;
 
 public class Constants {
     //文字中x y的偏移量
-    public static final int TEXT_OFFSET_X = (int) Util.dpToPixel(5);
+    public static final int TEXT_OFFSET_X = (int) Util.dpToPixel(1);
     public static final int TEXT_OFFSET_Y = (int)Util.dpToPixel(5);
     //文字滑动的阈值
     //从右往左滑动时，scaleRatioX 的范围是 1--0 ；当 scaleRatioX 小于该阈值时，开启动画
@@ -35,4 +35,17 @@ public class Constants {
     public static final int MESSAGE_SIZE_DEFAULT = (int)Util.spToPixel(12);
     //Message text 默认起始偏移
     public static final int MESSAGE_MARGIN_START_DEFAULT = (int)Util.dpToPixel(10);
+
+
+    //Menu的默认宽高比
+    public static final float MENU_ASPECT_DEFAULT= 1.0f;
+    //Menu的默认字体大小
+    public static final int MENU_TEXT_SIZE_DEFAULT = (int)Util.spToPixel(20f);
+
+
+    //Menu A 的默认背景色
+    public static final int MENU_A_BACKGROUND_DEFAULT = Color.RED;
+
+    //Menu B 的默认背景色
+    public static final int MENU_B_BACKGROUND_DEFAULT = Color.GRAY;
 }

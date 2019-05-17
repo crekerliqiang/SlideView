@@ -22,7 +22,18 @@
         <attr name="message_text_size" format="dimension"/>
         <attr name="message_text_color" format="reference"/>
         <attr name="message_text_margin_start" format="dimension"/>
+        
+        <!--Menu a-->
+        <attr name="menu_a_background" format="reference"/>
+        <attr name="menu_a_text_size" format="dimension"/>
+        <attr name="menu_a_text" format="string"/>
+        <attr name="menu_a_aspect" format="float"/>
 
+        <!--Menu b-->
+        <attr name="menu_b_background" format="reference"/>
+        <attr name="menu_b_text_size" format="dimension"/>
+        <attr name="menu_b_text" format="string"/>
+        <attr name="menu_b_aspect" format="float"/>
     </declare-styleable>
 
 
