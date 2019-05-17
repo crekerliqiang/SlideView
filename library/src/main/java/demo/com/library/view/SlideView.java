@@ -21,9 +21,11 @@ import demo.com.library.LLog;
 import demo.com.library.R;
 import demo.com.library.Util;
 
+import static demo.com.library.Constants.IMAGE_MARGIN_START_DEFAULT;
 import static demo.com.library.Constants.IMAGE_SLIDE_LEN_DEFAULT;
 import static demo.com.library.Constants.MESSAGE_MARGIN_START_DEFAULT;
 import static demo.com.library.Constants.MESSAGE_SIZE_DEFAULT;
+import static demo.com.library.Constants.MESSAGE_TEXT_DEFAULT;
 import static demo.com.library.Constants.SCALE_RATIO_LEFT_X_THRESHOLD;
 import static demo.com.library.Constants.SCALE_RATIO_RIGHT_X_THRESHOLD;
 import static demo.com.library.Constants.TEXT_COLOR_DEFAULT;
@@ -33,6 +35,7 @@ import static demo.com.library.Constants.TEXT_OFFSET_Y;
 import static demo.com.library.Constants.TITLE_HEIGHT;
 import static demo.com.library.Constants.TITLE_MARGIN_START_DEFAULT;
 import static demo.com.library.Constants.TITLE_SIZE_DEFAULT;
+import static demo.com.library.Constants.TITLE_TEXT_DEFAULT;
 
 
 public class SlideView extends View {
@@ -66,6 +69,7 @@ public class SlideView extends View {
     Bitmap bitmap;
     int imageSlideLength;
     float imageMarginStart;
+    boolean isDrawBitmap;
     //Title
     String titleText;
     int titleTextSize;
@@ -120,15 +124,24 @@ public class SlideView extends View {
         TypedArray typedArray = context.obtainStyledAttributes(attrs,R.styleable.SlideView);
         imageSource = typedArray.getResourceId(R.styleable.SlideView_image_src,0);
         imageSlideLength = typedArray.getDimensionPixelSize(R.styleable.SlideView_image_slide_length,IMAGE_SLIDE_LEN_DEFAULT);
-        imageMarginStart = typedArray.getDimensionPixelSize(R.styleable.SlideView_image_margin_start,0);
+        imageMarginStart = typedArray.getDimensionPixelSize(R.styleable.SlideView_image_margin_start,IMAGE_MARGIN_START_DEFAULT);
+        //图片为空的情况
+        if(imageSource == 0){
+            imageSource = R.drawable.crekerli_pig;
+            isDrawBitmap = false;
+        }else{
+            isDrawBitmap = true;
+        }
         bitmap = Util.getBitmap(imageSource,imageSlideLength);
         //2.Title
         titleText = typedArray.getString(R.styleable.SlideView_title_text);
+        if(titleText == null)titleText = TITLE_TEXT_DEFAULT;
         titleTextSize = typedArray.getDimensionPixelSize(R.styleable.SlideView_title_text_size, TITLE_SIZE_DEFAULT);
         titleTextColor = typedArray.getColor(R.styleable.SlideView_title_text_color, TEXT_COLOR_DEFAULT);
         titleTextMarginStart = typedArray.getDimensionPixelSize(R.styleable.SlideView_title_text_margin_start,TITLE_MARGIN_START_DEFAULT);
         //3.Message
         messageText = typedArray.getString(R.styleable.SlideView_message_text);
+        if(messageText == null)messageText = MESSAGE_TEXT_DEFAULT;
         messageTextSize = typedArray.getDimensionPixelSize(R.styleable.SlideView_message_text_size,MESSAGE_SIZE_DEFAULT);
         messageTextColor = typedArray.getColor(R.styleable.SlideView_message_text_color, TEXT_COLOR_DEFAULT);;
         messageTextMarginStart = typedArray.getDimensionPixelSize(R.styleable.SlideView_message_text_margin_start,MESSAGE_MARGIN_START_DEFAULT);;
@@ -202,7 +215,7 @@ public class SlideView extends View {
         //移动
         canvas.translate(menuString.size() * menuBackgroundWidth * ( 1 * scaleRatioX - 1f),0);
         //绘制 image
-        canvas.drawBitmap(bitmap,imageMarginStart, (getHeight() - bitmap.getHeight())>>1, paintTitle);
+        if(isDrawBitmap)canvas.drawBitmap(bitmap,imageMarginStart, (getHeight() - bitmap.getHeight())>>1, paintTitle);
         //绘制 title
         canvas.drawText(titleText,titleTextOffsetX ,titleTextOffsetY , paintTitle);
         //绘制message

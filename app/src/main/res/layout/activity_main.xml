@@ -23,7 +23,7 @@
         app:title_text_margin_start="10dp"
 
         app:message_text="@string/message"
-        app:message_text_size="12sp"
+        app:message_text_size="10sp"
         app:message_text_color="@color/colorBlack"
         app:message_text_margin_start="10dp"
 
