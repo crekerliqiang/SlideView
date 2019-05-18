@@ -9,12 +9,12 @@ import demo.com.library.view.SlideViewOnClickListener;
 
 public class MainActivity extends AppCompatActivity {
 
-    final String TAG = MainActivity.class.getSimpleName()+"111";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         final SlideView view = findViewById(R.id.button);
 
@@ -29,5 +29,39 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //模拟内存泄露
+//        mHandler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//            }
+//        }, 3 * 60 * 1000);
+//
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                try {
+//                    Thread.sleep(3000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//                finish();
+//            }
+//        }).start();
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Util.toast("onDestroy: ");
+
     }
 }

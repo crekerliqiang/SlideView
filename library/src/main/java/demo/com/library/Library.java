@@ -3,14 +3,14 @@ package demo.com.library;
 import android.content.Context;
 
 public class Library {
-    public static Context mContext = null;
+    public static Context context = null;
     public static void init(Context context){
-        mContext = context;
+        Library.context = context;
     }
-    public static Context getmContext(){
-        if(mContext == null){
+    public static Context getContext(){
+        if(context == null){
             throw new RuntimeException("Library is not initialized");
         }
-        return mContext;
+        return context;
     }
 }

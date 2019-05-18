@@ -26,7 +26,7 @@ import static demo.com.library.Constants.IMAGE_MARGIN_START_DEFAULT;
 import static demo.com.library.Constants.IMAGE_SLIDE_LEN_DEFAULT;
 import static demo.com.library.Constants.KEY_X_END;
 import static demo.com.library.Constants.KEY_X_START;
-import static demo.com.library.Constants.MENU_ASPECT_DEFAULT;
+import static demo.com.library.Constants.MENU_BACKGROUND_ASPECT_DEFAULT;
 import static demo.com.library.Constants.MENU_A_BACKGROUND_DEFAULT;
 import static demo.com.library.Constants.MENU_B_BACKGROUND_DEFAULT;
 import static demo.com.library.Constants.MENU_TEXT_SIZE_DEFAULT;
@@ -49,26 +49,56 @@ public class SlideView extends View {
 
     private static final String TAG = SlideView.class.getSimpleName();
 
-    private Paint paintBackground3 = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private Paint paintTitle = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private Paint paintMessage = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private Paint paintMenu = new Paint(Paint.ANTI_ALIAS_FLAG);
-    //触屏监听
+    /**
+     * Paint : 绘制Menu的背景
+     */
+    private Paint paintMenuBackground = new Paint(Paint.ANTI_ALIAS_FLAG);
+    /**
+     * Paint:绘制Menu的文本
+     */
+    private Paint paintMenuText = new Paint(Paint.ANTI_ALIAS_FLAG);
+    /**
+     * Paint : 绘制Title文本
+     */
+    private Paint paintTitleText = new Paint(Paint.ANTI_ALIAS_FLAG);
+    /**
+     * Paint : 绘制Image的Bitmap
+     */
+    private Paint paintImageBitmap = new Paint(Paint.ANTI_ALIAS_FLAG);
+    /**
+     * Paint : 绘制Message的文本
+     */
+    private Paint paintMessageText = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+    /**
+     * 触屏监听
+     */
     private MyGestureListener gestureListener;
-    //触屏检测
+    /**
+     * 触屏检测
+     */
     private GestureDetectorCompat detectorCompat;
-    //设置点击菜单栏监听 -- 提供给外部使用
+    /**
+     * 设置点击菜单栏监听 -- 提供给开发者使用
+     */
     SlideViewOnClickListener onClickListener;
     public void setMenuOnClickListener(SlideViewOnClickListener listener){
         onClickListener = listener;
     }
-    //滑动效果的动画
+    /**
+     * 滑动效果的动画
+     */
     ObjectAnimator animator = ObjectAnimator.ofFloat(this,"scaleRatioX",1f);
 
-    //动画是否开始
+    /**
+     * 动画是否开始
+     */
     boolean isAnimatorStart = false;
 
-    //水平方向的缩放比例
+    /**
+     * Image Title Message Menu 的 水平方向的缩放比例
+     * 同时也是自定义属性动画的参数
+     */
     float scaleRatioX = 1.0f;
     public float getScaleRatioX() {
         return scaleRatioX;
@@ -77,66 +107,177 @@ public class SlideView extends View {
         this.scaleRatioX = scaleRatioX;
         invalidate();
     }
-    //图片
+    //Image 相关
+    /**
+     * Image : source 用于获取Bitmap
+     */
     int imageSource;
+
+    /**
+     * Image: bitmap,get by @ImageSource
+     */
     Bitmap bitmap;
+
+    /**
+     * Image : image的边长
+     */
     int imageSlideLength;
+
+    /**
+     * Image : image的起始偏移量
+     */
     float imageMarginStart;
+
+    /**
+     * 是否绘制 Image
+     * 开发者没有设置 image 时，就不绘制bitmap
+     */
     boolean isDrawBitmap;
-    //Title
+
+    //Title 相关
+    /**
+     * Title:文本内容
+     */
     String titleText;
+
+    /**
+     * Title:文本大小
+     */
     int titleTextSize;
+
+    /**
+     * Title:文本颜色
+     */
     int titleTextColor;
+
+    /**
+     * Title:文本的起始偏移
+     */
     int titleTextMarginStart;
+
+    /**
+     * Title: 文本的高度
+     */
     int titleViewHeight;
+
+    /**
+     * Title:文字绘制时的起始X位置
+     */
     int titleTextOffsetX;
+
+    /**
+     * Title:文字绘制时的起始Y位置
+     */
     int titleTextOffsetY;
+
     //Message
+    /**
+     * Message : 文本内容
+     */
     String messageText;
+
+    /**
+     * Message : 文本大小
+     */
     int messageTextSize;
+
+    /**
+     * Message : 文本颜色
+     */
     int messageTextColor;
+
+    /**
+     * Message : 文本的起始偏移
+     */
     int messageTextMarginStart;
+
+    /**
+     * Message : 文本的高度
+     */
     int messageViewHeight;
+
+    /**
+     * Message : 文字绘制时的起始X位置
+     */
     int messageTextOffsetX;
+
+    /**
+     * Message : 文字绘制时的起始X位置
+     */
     int messageTextOffsetY;
+
 
     //滑动菜单区域
     /**
-     * 菜单的文字 X 轴偏移大小
+     * Menu : 菜单的文字 X 轴绘制位置
      */
     int menuTextOffsetX;
+
     /**
-     * 菜单的文字 Y 轴偏移大小
+     * Menu : 菜单的文字 Y 轴绘制位置
      */
     int menuTextOffsetY;
+
     /**
-     * 菜单的背景 X 轴偏移大小
+     * Menu : 所有菜单的背景 X 轴绘制的位置
      */
     List<Integer> menuBackgroundOffsetX = new ArrayList<>();
+
     /**
-     * 菜单的背景 X 方向已经使用了的宽度
+     * 存储每一个菜单背景的起始值的X轴的大小
      */
-    int menuBackgroundWidthUsed = 0;
+    List<HashMap<String,Integer>> menuBackgroundStartEndX = new ArrayList<>();
+
     /**
-     * 每个菜单背景的宽度
+     * Menu : 每个菜单背景的宽度
      */
     List<Integer> menuBackgroundWidthList = new ArrayList<>();
+
+    /**
+     * Menu : 菜单的背景 X 方向已经使用了的宽度
+     */
+    int menuBackgroundWidthUsed = 0;
+
+    /**
+     * Menu : 所有 菜单背景的平均宽度
+     */
     int menuBackgroundWidthAverage;
     /**
-     * 菜单背景的高度
+     * Menu : 菜单背景的高度
      */
     int menuBackgroundHeight;
+
     /**
-     * 菜单是否是展开状态，用于判断点击事件
+     * Menu : 菜单是否是展开状态，用于判断点击事件
      */
     boolean isMenuExpand = false;
-    List<String> menuString = new ArrayList<>();
-    List<Integer> menuColor = new ArrayList<>();
-    List<Float> menuAspect = new ArrayList<>();
-    List<Integer> menuTextSize = new ArrayList<>();
-    //存储菜单背景的范围
-    List<HashMap<String,Integer>> menuBackgroundOffsets = new ArrayList<>();
 
+    /**
+     * Menu : 所有菜单的文本内容
+     */
+    List<String> menuTextString = new ArrayList<>();
+
+    /**
+     * Menu : 所有菜单的背景颜色
+     */
+    List<Integer> menuBackgroundColor = new ArrayList<>();
+
+    /**
+     * Menu : 所有菜单背景的宽高比
+     */
+    List<Float> menuBackgroundAspect = new ArrayList<>();
+
+    /**
+     * Menu : 所有菜单的文字大小
+     */
+    List<Integer> menuTextSize = new ArrayList<>();
+
+
+    /**
+     * View 的初始化
+     * @param context 上下文
+     * @param attrs 属性集
+     */
     public SlideView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         //获取attrs 资源
@@ -168,35 +309,35 @@ public class SlideView extends View {
         //4 Menu a
         String menuString = typedArray.getString(R.styleable.SlideView_menu_a_text);
         int menuColor = typedArray.getColor(R.styleable.SlideView_menu_a_background,MENU_A_BACKGROUND_DEFAULT);
-        float menuAspect = typedArray.getFloat(R.styleable.SlideView_menu_a_aspect,MENU_ASPECT_DEFAULT);
+        float menuAspect = typedArray.getFloat(R.styleable.SlideView_menu_a_aspect, MENU_BACKGROUND_ASPECT_DEFAULT);
         int menuTextSize = typedArray.getDimensionPixelSize(R.styleable.SlideView_menu_a_text_size,MENU_TEXT_SIZE_DEFAULT);
         if(menuString != null){
-            this.menuString.add(menuString);
-            this.menuColor.add(menuColor);
-            this.menuAspect.add(menuAspect);
+            this.menuTextString.add(menuString);
+            this.menuBackgroundColor.add(menuColor);
+            this.menuBackgroundAspect.add(menuAspect);
             this.menuTextSize.add(menuTextSize);
         }
 
         // 5 Menu b
         menuString = typedArray.getString(R.styleable.SlideView_menu_b_text);
         menuColor = typedArray.getColor(R.styleable.SlideView_menu_b_background,MENU_B_BACKGROUND_DEFAULT);
-        menuAspect = typedArray.getFloat(R.styleable.SlideView_menu_b_aspect,MENU_ASPECT_DEFAULT);
+        menuAspect = typedArray.getFloat(R.styleable.SlideView_menu_b_aspect, MENU_BACKGROUND_ASPECT_DEFAULT);
         menuTextSize = typedArray.getDimensionPixelSize(R.styleable.SlideView_menu_b_text_size,MENU_TEXT_SIZE_DEFAULT);
         if(menuString != null){
-            this.menuString.add(menuString);
-            this.menuColor.add(menuColor);
-            this.menuAspect.add(menuAspect);
+            this.menuTextString.add(menuString);
+            this.menuBackgroundColor.add(menuColor);
+            this.menuBackgroundAspect.add(menuAspect);
             this.menuTextSize.add(menuTextSize);
         }
         typedArray.recycle();
         //设置动画时间
-        animator.setDuration(800);
+        animator.setDuration(500);
         //Title文字规则
-        paintTitle.setColor(messageTextColor);
-        paintTitle.setTextSize(titleTextSize);
+        paintTitleText.setColor(messageTextColor);
+        paintTitleText.setTextSize(titleTextSize);
         //Message文字规则
-        paintMessage.setColor(titleTextColor);
-        paintMessage.setTextSize(messageTextSize);
+        paintMessageText.setColor(titleTextColor);
+        paintMessageText.setTextSize(messageTextSize);
         //初始化点击监听
         gestureListener = new MyGestureListener();
             //设置滑动点击
@@ -209,19 +350,16 @@ public class SlideView extends View {
             public void onAnimationStart(Animator animation) {
 
             }
-
             @Override
             public void onAnimationEnd(Animator animation) {
                 isAnimatorStart = false;
                 //scaleRatioX 为 0 时，表示展开
                 isMenuExpand = Util.isFloatEqual(scaleRatioX, 0f);
             }
-
             @Override
             public void onAnimationCancel(Animator animation) {
 
             }
-
             @Override
             public void onAnimationRepeat(Animator animation) {
 
@@ -229,6 +367,9 @@ public class SlideView extends View {
         });
     }
 
+    /**
+     * 界面改变时调用，用于初始化各种参数
+     */
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
@@ -253,9 +394,9 @@ public class SlideView extends View {
         //菜单的背景高度 [高度默认]
         menuBackgroundHeight = getHeight();
         //菜单背景的高度
-        for(int i = 0;i < menuString.size();i++){
+        for(int i = 0; i < menuTextString.size(); i++){
             //菜单背景的宽度
-            int width = (int)((float)menuBackgroundHeight * menuAspect.get(i));
+            int width = (int)((float)menuBackgroundHeight * menuBackgroundAspect.get(i));
             menuBackgroundWidthList.add(width);
             //记录背景已经使用了的长度
             menuBackgroundWidthUsed += width;
@@ -266,45 +407,50 @@ public class SlideView extends View {
             HashMap<String,Integer> map = new HashMap<>();
             map.put(KEY_X_START, offsetX);
             map.put(KEY_X_END, offsetX + width);
-            menuBackgroundOffsets.add(map);
+            menuBackgroundStartEndX.add(map);
 
         }
         menuBackgroundWidthUsed = 0;
+        //获取宽度的平均值
         menuBackgroundWidthAverage = Util.getListAverage(menuBackgroundWidthList);
     }
 
+    /**
+     * 绘制方法
+     */
     @Override
     protected void onDraw(Canvas canvas) {
         canvas.save();
         //移动
-        canvas.translate(menuString.size() * menuBackgroundWidthAverage * (scaleRatioX - 1f),0);
+        canvas.translate(menuTextString.size() * menuBackgroundWidthAverage * (scaleRatioX - 1f),0);
         //绘制 image
-        if(isDrawBitmap)canvas.drawBitmap(bitmap,imageMarginStart, (getHeight() - bitmap.getHeight())>>1, paintTitle);
+        if(isDrawBitmap)canvas.drawBitmap(bitmap,imageMarginStart, (getHeight() - bitmap.getHeight())>>1, paintImageBitmap);
         //绘制 title
-        canvas.drawText(titleText,titleTextOffsetX ,titleTextOffsetY , paintTitle);
+        canvas.drawText(titleText,titleTextOffsetX ,titleTextOffsetY , paintTitleText);
         //绘制message
-        canvas.drawText(messageText,messageTextOffsetX,messageTextOffsetY,paintMessage);
+        canvas.drawText(messageText,messageTextOffsetX,messageTextOffsetY, paintMessageText);
         canvas.restore();
         //绘制菜单区域
 
         //缩放[]
         canvas.scale(1 - scaleRatioX, 1,getWidth(),getHeight()>>1);
-        for(int i = 0;i < menuString.size();i++){
+        //绘制 Menu
+        for(int i = 0; i < menuTextString.size(); i++){
             //绘制背景
-            paintBackground3.setColor(menuColor.get(i));
+            paintMenuBackground.setColor(menuBackgroundColor.get(i));
             canvas.drawRect(menuBackgroundOffsetX.get(i),0,menuBackgroundOffsetX.get(i) + menuBackgroundWidthList.get(i),
-                    menuBackgroundHeight,paintBackground3);
-            paintBackground3.reset();
+                    menuBackgroundHeight, paintMenuBackground);
+            paintMenuBackground.reset();
 
             //绘制文字
             int textSize = menuTextSize.get(i);
-            paintMenu.setTextSize(textSize);
+            paintMenuText.setTextSize(textSize);
             menuTextOffsetX = menuBackgroundOffsetX.get(i) +
-                    (menuBackgroundWidthList.get(i) - menuString.get(i).length() * textSize)/2;
+                    (menuBackgroundWidthList.get(i) - menuTextString.get(i).length() * textSize)/2;
             menuTextOffsetY = (menuBackgroundHeight + textSize)/2;
 
-            canvas.drawText(menuString.get(i), menuTextOffsetX + TEXT_OFFSET_X,
-                    menuTextOffsetY - TEXT_OFFSET_Y, paintMenu);
+            canvas.drawText(menuTextString.get(i), menuTextOffsetX + TEXT_OFFSET_X,
+                    menuTextOffsetY - TEXT_OFFSET_Y, paintMenuText);
         }
     }
 
@@ -367,14 +513,13 @@ public class SlideView extends View {
         public boolean onSingleTapConfirmed(MotionEvent e) {
             //展开的情况才判断
             if(isMenuExpand){
-                for(int i = 0; i < menuBackgroundOffsets.size();i++){
-                    HashMap<String,Integer> map = new HashMap<>();
-                    map = menuBackgroundOffsets.get(i);
-                    Integer X1 = map.get(KEY_X_START);
-                    Integer X2 = map.get(KEY_X_END);
+                for(int i = 0; i < menuBackgroundStartEndX.size(); i++){
+                    HashMap<String,Integer> hashMap = menuBackgroundStartEndX.get(i);
+                    Integer X1 = hashMap.get(KEY_X_START);
+                    Integer X2 = hashMap.get(KEY_X_END);
                     if(X1 != null && X2 != null){
                         if( e.getX() > X1 && e.getX() < X2){
-                            onClickListener.onclick(menuString.get(i));
+                            onClickListener.onclick(menuTextString.get(i));
                         }
                     }
                 }
@@ -393,11 +538,6 @@ public class SlideView extends View {
         }
     }
 
-
-    /**
-     * 对外提供的接口
-     *
-     */
 
 
 }
