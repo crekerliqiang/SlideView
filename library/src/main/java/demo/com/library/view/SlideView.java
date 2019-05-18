@@ -318,6 +318,8 @@ public class SlideView extends View {
             this.menuTextSize.add(menuTextSize);
         }
 
+
+
         // 5 Menu b
         menuString = typedArray.getString(R.styleable.SlideView_menu_b_text);
         menuColor = typedArray.getColor(R.styleable.SlideView_menu_b_background,MENU_B_BACKGROUND_DEFAULT);
@@ -502,6 +504,8 @@ public class SlideView extends View {
 
         public void onLongPress(MotionEvent e) {
 
+            Util.toast("long press");
+
         }
 
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
@@ -519,7 +523,15 @@ public class SlideView extends View {
                     Integer X2 = hashMap.get(KEY_X_END);
                     if(X1 != null && X2 != null){
                         if( e.getX() > X1 && e.getX() < X2){
-                            onClickListener.onclick(menuTextString.get(i));
+                            switch (i){
+                                case 0:
+                                    onClickListener.onClick(R.id.menu_a);
+                                    break;
+                                case 1:
+                                    onClickListener.onClick(R.id.menu_b);
+                                    break;
+                            }
+
                         }
                     }
                 }
@@ -536,6 +548,18 @@ public class SlideView extends View {
         public boolean onDoubleTapEvent(MotionEvent e) {
             return false;
         }
+    }
+
+    public void setTitleText(String titleText){
+        this.titleText = titleText;
+        invalidate();
+    }
+    public void setMenuTextString(String s1,String s2){
+        menuTextString.clear();
+        menuTextString = new ArrayList<>();
+        menuTextString.add(s1);
+        menuTextString.add(s2);
+        invalidate();
     }
 
 

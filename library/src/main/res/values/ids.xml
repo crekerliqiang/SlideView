@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="image" type="id"/>
+    <item name="title" type="id"/>
+    <item name="message" type="id"/>
+    <item name="menu_a" type="id"/>
+    <item name="menu_b" type="id"/>
+</resources>

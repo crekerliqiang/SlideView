@@ -9,53 +9,43 @@ import demo.com.library.view.SlideViewOnClickListener;
 
 public class MainActivity extends AppCompatActivity {
 
-
+    boolean change = true;
+    SlideView view = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-        final SlideView view = findViewById(R.id.button);
+        view = findViewById(R.id.button);
 
         view.setMenuOnClickListener(new SlideViewOnClickListener() {
             @Override
-            public void onclick(String  menuName) {
-                if(getResources().getString(R.string.delete).equals(menuName)){
-                    Util.toast("点击. " + menuName);
-                }else if(getResources().getString(R.string.set).equals(menuName)){
-                    Util.toast("点击: " + menuName);
-
+            public void onClick(int id) {
+                switch (id){
+                    case R.id.menu_a:
+                        Util.toast("点击 A");
+                        break;
+                    case R.id.menu_b:
+                        Util.toast("点击 B");
+                        break;
                 }
+                changeView();
             }
+
+
         });
 
 
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        //模拟内存泄露
-//        mHandler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//
-//            }
-//        }, 3 * 60 * 1000);
-//
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                try {
-//                    Thread.sleep(3000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//                finish();
-//            }
-//        }).start();
-
+    private void changeView(){
+        if(change){
+            change = false;
+            view.setMenuTextString( "设为未读","删除");
+        }else{
+            change = true;
+            view.setMenuTextString("删除", "设为未读");
+        }
     }
 
     @Override
