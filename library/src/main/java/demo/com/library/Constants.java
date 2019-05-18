@@ -48,4 +48,8 @@ public class Constants {
 
     //Menu B 的默认背景色
     public static final int MENU_B_BACKGROUND_DEFAULT = Color.GRAY;
+
+    //Click Listener 存储背景坐标起始位置的HaspMap中的键
+    public static final String KEY_X_START = "kye_x_start";
+    public static final String KEY_X_END = "kye_x_end";
 }

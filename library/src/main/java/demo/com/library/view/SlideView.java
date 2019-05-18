@@ -24,6 +24,8 @@ import demo.com.library.Util;
 
 import static demo.com.library.Constants.IMAGE_MARGIN_START_DEFAULT;
 import static demo.com.library.Constants.IMAGE_SLIDE_LEN_DEFAULT;
+import static demo.com.library.Constants.KEY_X_END;
+import static demo.com.library.Constants.KEY_X_START;
 import static demo.com.library.Constants.MENU_ASPECT_DEFAULT;
 import static demo.com.library.Constants.MENU_A_BACKGROUND_DEFAULT;
 import static demo.com.library.Constants.MENU_B_BACKGROUND_DEFAULT;
@@ -56,8 +58,8 @@ public class SlideView extends View {
     //触屏检测
     private GestureDetectorCompat detectorCompat;
     //设置点击菜单栏监听 -- 提供给外部使用
-    OnClickListener onClickListener;
-    public void setMenuOnClickListener(OnClickListener listener){
+    SlideViewOnClickListener onClickListener;
+    public void setMenuOnClickListener(SlideViewOnClickListener listener){
         onClickListener = listener;
     }
     //滑动效果的动画
@@ -110,15 +112,16 @@ public class SlideView extends View {
     /**
      * 菜单的背景 X 轴偏移大小
      */
-    int menuBackgroundOffsetX;
+    List<Integer> menuBackgroundOffsetX = new ArrayList<>();
     /**
      * 菜单的背景 X 方向已经使用了的宽度
      */
     int menuBackgroundWidthUsed = 0;
     /**
-     * 菜单背景的宽度
+     * 每个菜单背景的宽度
      */
-    int menuBackgroundWidth;
+    List<Integer> menuBackgroundWidthList = new ArrayList<>();
+    int menuBackgroundWidthAverage;
     /**
      * 菜单背景的高度
      */
@@ -185,7 +188,6 @@ public class SlideView extends View {
             this.menuAspect.add(menuAspect);
             this.menuTextSize.add(menuTextSize);
         }
-
         typedArray.recycle();
         //设置动画时间
         animator.setDuration(800);
@@ -248,15 +250,34 @@ public class SlideView extends View {
         if(messageTextSize * messageText.length() > mostTextSize){
             messageText = Util.cutText(messageText,messageTextSize,mostTextSize);
         }
-        //菜单的背景宽度和高度 [高度默认]
+        //菜单的背景高度 [高度默认]
         menuBackgroundHeight = getHeight();
+        //菜单背景的高度
+        for(int i = 0;i < menuString.size();i++){
+            //菜单背景的宽度
+            int width = (int)((float)menuBackgroundHeight * menuAspect.get(i));
+            menuBackgroundWidthList.add(width);
+            //记录背景已经使用了的长度
+            menuBackgroundWidthUsed += width;
+            //根据已经使用了的长度计算偏移
+            int offsetX = getWidth() - menuBackgroundWidthUsed;
+            menuBackgroundOffsetX.add(offsetX);
+            //存储一下背景的数据，点击的时候用到
+            HashMap<String,Integer> map = new HashMap<>();
+            map.put(KEY_X_START, offsetX);
+            map.put(KEY_X_END, offsetX + width);
+            menuBackgroundOffsets.add(map);
+
+        }
+        menuBackgroundWidthUsed = 0;
+        menuBackgroundWidthAverage = Util.getListAverage(menuBackgroundWidthList);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         canvas.save();
         //移动
-        canvas.translate(menuString.size() * menuBackgroundWidth * (scaleRatioX - 1f) * 0.7f,0);
+        canvas.translate(menuString.size() * menuBackgroundWidthAverage * (scaleRatioX - 1f),0);
         //绘制 image
         if(isDrawBitmap)canvas.drawBitmap(bitmap,imageMarginStart, (getHeight() - bitmap.getHeight())>>1, paintTitle);
         //绘制 title
@@ -266,39 +287,25 @@ public class SlideView extends View {
         canvas.restore();
         //绘制菜单区域
 
-        //缩放[!如果放在for循环中会有细节上的问题]
+        //缩放[]
         canvas.scale(1 - scaleRatioX, 1,getWidth(),getHeight()>>1);
-        menuBackgroundOffsets = new ArrayList<>();
         for(int i = 0;i < menuString.size();i++){
-            //菜单背景的宽度
-            menuBackgroundWidth = (int)((float)menuBackgroundHeight * menuAspect.get(i));
-            //记录背景已经使用了的长度
-            menuBackgroundWidthUsed += menuBackgroundWidth;
-
-            LLog.d(TAG,"WidthUsed " + menuBackgroundWidthUsed + "  BackgroundWidth  " + menuBackgroundWidth);
-
-            //根据已经使用了的长度计算偏移
-            menuBackgroundOffsetX = getWidth() - menuBackgroundWidthUsed;
-
-            paintBackground3.setColor(menuColor.get(i));
-            //存储一下背景的数据，点击的时候用到
-//            List<HashMap<String,Integer>> menuBackgroundOffset = new ArrayList<>();
-            HashMap<String,Integer> map = new HashMap<>();
-            map.put("XS", menuBackgroundOffsetX);
-            map.put("XE", menuBackgroundOffsetX + menuBackgroundWidth);
-            menuBackgroundOffsets.add(map);
             //绘制背景
-            canvas.drawRect(menuBackgroundOffsetX,0,menuBackgroundOffsetX + menuBackgroundWidth,menuBackgroundHeight,paintBackground3);
+            paintBackground3.setColor(menuColor.get(i));
+            canvas.drawRect(menuBackgroundOffsetX.get(i),0,menuBackgroundOffsetX.get(i) + menuBackgroundWidthList.get(i),
+                    menuBackgroundHeight,paintBackground3);
             paintBackground3.reset();
 
+            //绘制文字
             int textSize = menuTextSize.get(i);
             paintMenu.setTextSize(textSize);
-            menuTextOffsetX = menuBackgroundOffsetX + (menuBackgroundWidth - menuString.get(i).length() * textSize)/2;
+            menuTextOffsetX = menuBackgroundOffsetX.get(i) +
+                    (menuBackgroundWidthList.get(i) - menuString.get(i).length() * textSize)/2;
             menuTextOffsetY = (menuBackgroundHeight + textSize)/2;
+
             canvas.drawText(menuString.get(i), menuTextOffsetX + TEXT_OFFSET_X,
                     menuTextOffsetY - TEXT_OFFSET_Y, paintMenu);
         }
-        menuBackgroundWidthUsed = 0;
     }
 
     @Override
@@ -363,15 +370,14 @@ public class SlideView extends View {
                 for(int i = 0; i < menuBackgroundOffsets.size();i++){
                     HashMap<String,Integer> map = new HashMap<>();
                     map = menuBackgroundOffsets.get(i);
-                    if(map !=null){
-                        int X1 = map.get("XS");
-                        int X2 = map.get("XE");
+                    Integer X1 = map.get(KEY_X_START);
+                    Integer X2 = map.get(KEY_X_END);
+                    if(X1 != null && X2 != null){
                         if( e.getX() > X1 && e.getX() < X2){
-                            Util.toast("点击：" + menuString.get(i));
+                            onClickListener.onclick(menuString.get(i));
                         }
                     }
                 }
-
             }
             return false;
         }
@@ -386,5 +392,12 @@ public class SlideView extends View {
             return false;
         }
     }
+
+
+    /**
+     * 对外提供的接口
+     *
+     */
+
 
 }

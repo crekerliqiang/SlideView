@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory;
 import android.util.TypedValue;
 import android.widget.Toast;
 
+import java.util.List;
+
 public class Util {
 
     public static void toast(String s){
@@ -69,6 +71,20 @@ public class Util {
      */
     public static boolean isFloatEqual(float src,float dest){
         return Math.abs(src - dest) < 0.000001f;
+    }
+
+    /**
+     * 获取 Integer List 中所有List的平均值
+     * @param list 输入
+     * @return 输出
+     */
+    public static int getListAverage(List<Integer> list){
+        if(list == null || list.size() == 0)return Integer.MIN_VALUE;
+        int sum = 0;
+        for(int i=0;i < list.size();i++){
+            sum += list.get(i);
+        }
+        return sum/list.size();
     }
 
 }
