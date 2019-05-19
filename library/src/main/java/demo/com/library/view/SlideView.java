@@ -515,8 +515,8 @@ public class SlideView extends View {
         //确定是单击
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
-            //展开的情况才判断
-            if(isMenuExpand){
+            //菜单栏展开、开发者设置了监听
+            if(isMenuExpand && onClickListener != null){
                 for(int i = 0; i < menuBackgroundStartEndX.size(); i++){
                     HashMap<String,Integer> hashMap = menuBackgroundStartEndX.get(i);
                     Integer X1 = hashMap.get(KEY_X_START);
