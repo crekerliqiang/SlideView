@@ -21,13 +21,14 @@ import java.util.List;
 import demo.com.library.LLog;
 import demo.com.library.R;
 import demo.com.library.Util;
+import demo.com.library.ViewConfigException;
 
 import static demo.com.library.Constants.IMAGE_MARGIN_START_DEFAULT;
 import static demo.com.library.Constants.IMAGE_SLIDE_LEN_DEFAULT;
 import static demo.com.library.Constants.KEY_X_END;
 import static demo.com.library.Constants.KEY_X_START;
-import static demo.com.library.Constants.MENU_BACKGROUND_ASPECT_DEFAULT;
 import static demo.com.library.Constants.MENU_A_BACKGROUND_DEFAULT;
+import static demo.com.library.Constants.MENU_BACKGROUND_ASPECT_DEFAULT;
 import static demo.com.library.Constants.MENU_B_BACKGROUND_DEFAULT;
 import static demo.com.library.Constants.MENU_TEXT_SIZE_DEFAULT;
 import static demo.com.library.Constants.MESSAGE_MARGIN_START_DEFAULT;
@@ -219,7 +220,7 @@ public class SlideView extends View {
     int menuTextOffsetY;
 
     /**
-     * Menu : 所有菜单的背景 X 轴绘制的位置
+     * Menu : 所有菜单的背景 X 轴绘制的起始位置
      */
     List<Integer> menuBackgroundOffsetX = new ArrayList<>();
 
@@ -271,6 +272,15 @@ public class SlideView extends View {
      * Menu : 所有菜单的文字大小
      */
     List<Integer> menuTextSize = new ArrayList<>();
+
+    /**
+     * Menu : 确认删除标志位
+     */
+    boolean isMenuDeleted = false;
+    /**
+     * Menu : 确定字符串
+     */
+    final String SURE;
 
 
     /**
@@ -332,6 +342,8 @@ public class SlideView extends View {
             this.menuTextSize.add(menuTextSize);
         }
         typedArray.recycle();
+        //获取固定字符串"sure"
+        SURE = context.getString(R.string.sure);
         //设置动画时间
         animator.setDuration(500);
         //Title文字规则
@@ -434,9 +446,32 @@ public class SlideView extends View {
         canvas.restore();
         //绘制菜单区域
 
+
+        //绘制Menu的删除确认
+        if(isMenuDeleted){
+            //1.绘制背景
+            paintMenuBackground.setColor(menuBackgroundColor.get(0));
+            //背景的起始点[left]为Menu的最左边的[list的最后一个]；结束点为最右边[list的第一个]
+            canvas.drawRect(menuBackgroundOffsetX.get(menuTextString.size() - 1),0,
+                    menuBackgroundOffsetX.get(0) + menuBackgroundWidthList.get(0),
+                    menuBackgroundHeight, paintMenuBackground);
+            paintMenuBackground.reset();
+            //2.绘制文字
+            int textSize = menuTextSize.get(0);
+            paintMenuText.setTextSize(textSize);
+            menuTextOffsetX = menuBackgroundOffsetX.get(menuTextString.size() - 1) +
+                    (menuBackgroundWidthAverage * menuTextString.size() - (SURE.length() + menuTextString.get(0).length()) * textSize)/2;
+            menuTextOffsetY = (menuBackgroundHeight + textSize)/2;
+
+            canvas.drawText(SURE + menuTextString.get(0), menuTextOffsetX + TEXT_OFFSET_X,
+                    menuTextOffsetY - TEXT_OFFSET_Y, paintMenuText);
+            //不再绘制下面的菜单栏
+            return;
+        }
+        //绘制 Menu
         //缩放[]
         canvas.scale(1 - scaleRatioX, 1,getWidth(),getHeight()>>1);
-        //绘制 Menu
+        //绘制背景和文字
         for(int i = 0; i < menuTextString.size(); i++){
             //绘制背景
             paintMenuBackground.setColor(menuBackgroundColor.get(i));
@@ -479,7 +514,8 @@ public class SlideView extends View {
 
         //滑动
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            float s = scaleRatioX;
+
+
             scaleRatioX = scaleRatioX - distanceX/getWidth();
             if(scaleRatioX < 0f)scaleRatioX = 0f;
             if(scaleRatioX > 1f)scaleRatioX = 1f;
@@ -491,11 +527,15 @@ public class SlideView extends View {
                 isAnimatorStart = true;
                 animator.setFloatValues(SCALE_RATIO_RIGHT_X_THRESHOLD,1f);
                 animator.start();
+                //确认删除的标志位取消
+                isMenuDeleted = false;
             }else  if(scaleRatioX < SCALE_RATIO_LEFT_X_THRESHOLD && distanceX > 0 && !isAnimatorStart && Math.abs(scaleRatioX - 0f) > 0.1f){
             //2.(scaleX < hold && 左滑) --> 动画：scaleX = hold : 0
                 isAnimatorStart = true;
                 animator.setFloatValues(SCALE_RATIO_LEFT_X_THRESHOLD,0f);
                 animator.start();
+                //确认删除的标志位取消
+                isMenuDeleted = false;
             }else{
                 invalidate();
             }
@@ -516,23 +556,51 @@ public class SlideView extends View {
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
             //菜单栏展开、开发者设置了监听
-            if(isMenuExpand && onClickListener != null){
-                for(int i = 0; i < menuBackgroundStartEndX.size(); i++){
-                    HashMap<String,Integer> hashMap = menuBackgroundStartEndX.get(i);
-                    Integer X1 = hashMap.get(KEY_X_START);
-                    Integer X2 = hashMap.get(KEY_X_END);
-                    if(X1 != null && X2 != null){
-                        if( e.getX() > X1 && e.getX() < X2){
-                            switch (i){
-                                case 0:
-                                    onClickListener.onClick(R.id.menu_a);
-                                    break;
-                                case 1:
-                                    onClickListener.onClick(R.id.menu_b);
-                                    break;
-                            }
+            if(!isMenuExpand || onClickListener == null)return false;
 
-                        }
+            HashMap<String,Integer> hashMap;
+
+            LLog.d(TAG,"is deleted " + isMenuDeleted);
+
+            //确定点击后继续点击[确定删除]
+            if(isMenuDeleted){
+
+                hashMap = menuBackgroundStartEndX.get(menuBackgroundStartEndX.size() - 1);
+                Integer startX = hashMap.get(KEY_X_START);
+
+                hashMap = menuBackgroundStartEndX.get(0);
+                Integer endX = hashMap.get(KEY_X_END);
+
+                if(startX == null || endX == null)throw new ViewConfigException("menuBackgroundStartEndX exception,check its resource");
+
+                LLog.d(TAG,"startX  " + startX + "  endX  " + endX + " e.getX " +e.getX());
+
+
+                if(e.getX() > startX && e.getX() < endX){
+                    onClickListener.onClick(R.id.sure_delete);
+                    LLog.d(TAG,"sure delete ");
+                }
+                return false;
+            }
+            //不是确定点击的情况
+            for(int i = 0; i < menuBackgroundStartEndX.size(); i++){
+                hashMap = menuBackgroundStartEndX.get(i);
+                Integer X1 = hashMap.get(KEY_X_START);
+                Integer X2 = hashMap.get(KEY_X_END);
+
+                if(X1 == null || X2 == null)throw new ViewConfigException("menuBackgroundStartEndX exception,check its resource");
+
+                if( e.getX() > X1 && e.getX() < X2){
+                    switch (i){
+                        case 0:
+                            onClickListener.onClick(R.id.menu_a);
+                            //显示是否删除的提示框
+                            isMenuDeleted = true;
+                            invalidate();
+                            break;
+                        case 1:
+                            onClickListener.onClick(R.id.menu_b);
+                            break;
                     }
                 }
             }

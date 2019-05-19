@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import demo.com.library.Util;
 import demo.com.library.view.SlideView;
+import demo.com.library.view.SlideViewOnClickListener;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -17,22 +18,25 @@ public class MainActivity extends AppCompatActivity {
 
         view = findViewById(R.id.button);
 
-//        view.setMenuOnClickListener(new SlideViewOnClickListener() {
-//            @Override
-//            public void onClick(int id) {
-//                switch (id){
-//                    case R.id.menu_a:
-//                        Util.toast("点击 A");
-//                        break;
-//                    case R.id.menu_b:
-//                        Util.toast("点击 B");
-//                        break;
-//                }
+        view.setMenuOnClickListener(new SlideViewOnClickListener() {
+            @Override
+            public void onClick(int id) {
+                switch (id){
+                    case R.id.menu_a:
+                        Util.toast("点击 A");
+                        break;
+                    case R.id.menu_b:
+                        Util.toast("点击 B");
+                        break;
+                    case R.id.sure_delete:
+                        Util.toast("点击 SURE");
+                        break;
+                }
 //                changeView();
-//            }
-//
-//
-//        });
+            }
+
+
+        });
 
 
     }

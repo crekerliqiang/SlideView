@@ -85,4 +85,8 @@ public class Constants {
      */
     public static final String KEY_X_START = "kye_x_start";
     public static final String KEY_X_END = "kye_x_end";
+
+    /**
+     * 菜单的询问字符串
+     */
 }

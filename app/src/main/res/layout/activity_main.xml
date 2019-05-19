@@ -30,12 +30,12 @@
         app:menu_a_background="@color/colorRed"
         app:menu_a_text="@string/delete"
         app:menu_a_text_size="20sp"
-        app:menu_a_aspect="1.5"
+        app:menu_a_aspect="1"
 
         app:menu_b_background="@color/colorGray"
         app:menu_b_text="@string/set"
         app:menu_b_text_size="20sp"
-        app:menu_b_aspect="1.5"
+        app:menu_b_aspect="1"
 
 
         app:layout_constraintBottom_toBottomOf="parent"

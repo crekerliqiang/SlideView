@@ -5,6 +5,7 @@
 
     <!--菜单键-->
     <string name="delete">删除</string>
+    <string name="sure">确定</string>
     <string name="set">设为未读</string>
 
 </resources>

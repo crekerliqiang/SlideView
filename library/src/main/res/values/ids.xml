@@ -5,4 +5,5 @@
     <item name="message" type="id"/>
     <item name="menu_a" type="id"/>
     <item name="menu_b" type="id"/>
+    <item name="sure_delete" type="id"/>
 </resources>
