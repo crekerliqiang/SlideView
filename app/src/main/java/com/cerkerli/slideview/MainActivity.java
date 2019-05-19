@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
                         Util.toast("点击 SURE");
                         break;
                 }
-//                changeView();
             }
 
 
@@ -41,15 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void changeView(){
-        if(change){
-            change = false;
-            view.setMenuTextString( "设为未读","删除");
-        }else{
-            change = true;
-            view.setMenuTextString("删除", "设为未读");
-        }
-    }
+
 
     @Override
     protected void onDestroy() {
@@ -57,4 +48,8 @@ public class MainActivity extends AppCompatActivity {
         Util.toast("onDestroy: ");
 
     }
+
+
+
+
 }

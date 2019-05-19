@@ -89,23 +89,23 @@ public class SlideView extends View {
     /**
      * 滑动效果的动画
      */
-    ObjectAnimator animator = ObjectAnimator.ofFloat(this,"scaleRatioX",1f);
+    ObjectAnimator wholeViewAnimator = ObjectAnimator.ofFloat(this,"scaleWholeViewRatioX",1f);
 
     /**
      * 动画是否开始
      */
-    boolean isAnimatorStart = false;
+    boolean isWholeViewAnimatorStart = false;
 
     /**
      * Image Title Message Menu 的 水平方向的缩放比例
      * 同时也是自定义属性动画的参数
      */
-    float scaleRatioX = 1.0f;
-    public float getScaleRatioX() {
-        return scaleRatioX;
+    float scaleWholeViewRatioX = 1.0f;
+    public float getScaleWholeViewRatioX() {
+        return scaleWholeViewRatioX;
     }
-    public void setScaleRatioX(float scaleRatioX) {
-        this.scaleRatioX = scaleRatioX;
+    public void setScaleWholeViewRatioX(float scaleWholeViewRatioX) {
+        this.scaleWholeViewRatioX = scaleWholeViewRatioX;
         invalidate();
     }
     //Image 相关
@@ -274,13 +274,56 @@ public class SlideView extends View {
     List<Integer> menuTextSize = new ArrayList<>();
 
     /**
-     * Menu : 确认删除标志位
+     * Menu SURE: 确认删除标志位
      */
     boolean isMenuDeleted = false;
     /**
-     * Menu : 确定字符串
+     * Menu SURE: 确定字符串
      */
     final String SURE;
+    /**
+     * MENU SURE: 显示确定删除的动画
+     */
+    ObjectAnimator sureBackgroundAnimator =  ObjectAnimator.ofFloat(this,"scaleSureBackgroundViewRatioX",1f);
+
+    /**
+     * Menu SURE : 动画的缩放参数
+     */
+    float scaleSureBackgroundViewRatioX = 1f;
+
+    /**
+     * scaleSureBackgroundViewRatioX get 方法
+     * @return scaleSureBackgroundViewRatioX
+     */
+    public float getScaleSureBackgroundViewRatioX() {
+        return scaleSureBackgroundViewRatioX;
+    }
+
+    /**
+     *  scaleSureBackgroundViewRatioX set 方法
+     * @param scaleSureBackgroundViewRatioX 缩放参数
+     */
+    public void setScaleSureBackgroundViewRatioX(float scaleSureBackgroundViewRatioX) {
+        this.scaleSureBackgroundViewRatioX = scaleSureBackgroundViewRatioX;
+        invalidate();
+    }
+    /**
+     * Menu SURE : 显示文本的动画
+     */
+    ObjectAnimator sureTextAnimator =  ObjectAnimator.ofFloat(this,"scaleSureTextRatioX",0f);
+
+    /**
+     * Menu SURE : 显示文本的
+     */
+    float scaleSureTextRatioX = 0f;
+    public float getSscaleSureTextRatioX() {
+        return scaleSureTextRatioX;
+    }
+
+    public void setScaleSureTextRatioX(float scaleSureTextRatioX) {
+        this.scaleSureTextRatioX = scaleSureTextRatioX;
+        invalidate();
+    }
 
 
     /**
@@ -345,7 +388,7 @@ public class SlideView extends View {
         //获取固定字符串"sure"
         SURE = context.getString(R.string.sure);
         //设置动画时间
-        animator.setDuration(500);
+        wholeViewAnimator.setDuration(500);
         //Title文字规则
         paintTitleText.setColor(messageTextColor);
         paintTitleText.setTextSize(titleTextSize);
@@ -359,16 +402,16 @@ public class SlideView extends View {
             //设置双手点击[实际使用只用单手]
         detectorCompat.setOnDoubleTapListener(gestureListener);
         //动画结束监听
-        animator.addListener(new Animator.AnimatorListener() {
+        wholeViewAnimator.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
 
             }
             @Override
             public void onAnimationEnd(Animator animation) {
-                isAnimatorStart = false;
-                //scaleRatioX 为 0 时，表示展开
-                isMenuExpand = Util.isFloatEqual(scaleRatioX, 0f);
+                isWholeViewAnimatorStart = false;
+                //scaleWholeViewRatioX 为 0 时，表示展开
+                isMenuExpand = Util.isFloatEqual(scaleWholeViewRatioX, 0f);
             }
             @Override
             public void onAnimationCancel(Animator animation) {
@@ -398,7 +441,7 @@ public class SlideView extends View {
             titleText = Util.cutText(titleText,titleTextSize,mostTextSize);
         }
         //message x y 的坐标
-        messageTextOffsetX = TEXT_OFFSET_X + bitmap.getWidth() + messageTextMarginStart;
+        messageTextOffsetX = TEXT_OFFSET_X + bitmap.getWidth() + messageTextMarginStart + (int)imageMarginStart;
         messageTextOffsetY = getHeight() - (messageViewHeight - messageTextSize)/2 - TEXT_OFFSET_Y*2;
         //对Message的文本长度做限制
         mostTextSize = (int)((getWidth() - messageTextOffsetX)*TEXT_MAX_RATIO);
@@ -427,6 +470,14 @@ public class SlideView extends View {
         menuBackgroundWidthUsed = 0;
         //获取宽度的平均值
         menuBackgroundWidthAverage = Util.getListAverage(menuBackgroundWidthList);
+        //设置Sure动画的数据范围
+        sureBackgroundAnimator.setFloatValues(1f,(float)menuBackgroundWidthAverage * (float)menuTextString.size()/ (float)menuBackgroundWidthList.get(0));
+        //设置Sure文字动画的参数范围
+//        计算公式：
+//        MAX = (X总背景 - X背景1)/2 + (X当前文字长度 - X原来文字长度)/2    注：(X当前文字长度 - X原来文字长度) 相当于 SURE 变量
+        sureTextAnimator.setFloatValues(0,
+                (menuBackgroundWidthAverage * menuBackgroundWidthList.size() - (float)menuBackgroundWidthList.get(0))/2f +
+                (float)SURE.length() * (float)menuTextSize.get(0)/2f);
     }
 
     /**
@@ -436,7 +487,7 @@ public class SlideView extends View {
     protected void onDraw(Canvas canvas) {
         canvas.save();
         //移动
-        canvas.translate(menuTextString.size() * menuBackgroundWidthAverage * (scaleRatioX - 1f),0);
+        canvas.translate(menuTextString.size() * menuBackgroundWidthAverage * (scaleWholeViewRatioX - 1f),0);
         //绘制 image
         if(isDrawBitmap)canvas.drawBitmap(bitmap,imageMarginStart, (getHeight() - bitmap.getHeight())>>1, paintImageBitmap);
         //绘制 title
@@ -445,40 +496,30 @@ public class SlideView extends View {
         canvas.drawText(messageText,messageTextOffsetX,messageTextOffsetY, paintMessageText);
         canvas.restore();
         //绘制菜单区域
-
-
-        //绘制Menu的删除确认
-        if(isMenuDeleted){
-            //1.绘制背景
-            paintMenuBackground.setColor(menuBackgroundColor.get(0));
-            //背景的起始点[left]为Menu的最左边的[list的最后一个]；结束点为最右边[list的第一个]
-            canvas.drawRect(menuBackgroundOffsetX.get(menuTextString.size() - 1),0,
-                    menuBackgroundOffsetX.get(0) + menuBackgroundWidthList.get(0),
-                    menuBackgroundHeight, paintMenuBackground);
-            paintMenuBackground.reset();
-            //2.绘制文字
-            int textSize = menuTextSize.get(0);
-            paintMenuText.setTextSize(textSize);
-            menuTextOffsetX = menuBackgroundOffsetX.get(menuTextString.size() - 1) +
-                    (menuBackgroundWidthAverage * menuTextString.size() - (SURE.length() + menuTextString.get(0).length()) * textSize)/2;
-            menuTextOffsetY = (menuBackgroundHeight + textSize)/2;
-
-            canvas.drawText(SURE + menuTextString.get(0), menuTextOffsetX + TEXT_OFFSET_X,
-                    menuTextOffsetY - TEXT_OFFSET_Y, paintMenuText);
-            //不再绘制下面的菜单栏
-            return;
-        }
         //绘制 Menu
         //缩放[]
-        canvas.scale(1 - scaleRatioX, 1,getWidth(),getHeight()>>1);
+        canvas.scale(1 - scaleWholeViewRatioX, 1,getWidth(),getHeight()>>1);
         //绘制背景和文字
         for(int i = 0; i < menuTextString.size(); i++){
+            String menuText = menuTextString.get(i);
+            //需要绘制删除确认菜单
+            if(isMenuDeleted){
+                //只绘制一个
+                if(i == 1)break;
+                menuText = SURE + menuText;
+                canvas.save();
+                canvas.scale(scaleSureBackgroundViewRatioX, 1,getWidth(),getHeight()>>1);
+            }
             //绘制背景
             paintMenuBackground.setColor(menuBackgroundColor.get(i));
             canvas.drawRect(menuBackgroundOffsetX.get(i),0,menuBackgroundOffsetX.get(i) + menuBackgroundWidthList.get(i),
                     menuBackgroundHeight, paintMenuBackground);
             paintMenuBackground.reset();
 
+            //
+            if(isMenuDeleted)canvas.restore();
+
+            if(isMenuDeleted)canvas.translate(-scaleSureTextRatioX,0);
             //绘制文字
             int textSize = menuTextSize.get(i);
             paintMenuText.setTextSize(textSize);
@@ -486,7 +527,7 @@ public class SlideView extends View {
                     (menuBackgroundWidthList.get(i) - menuTextString.get(i).length() * textSize)/2;
             menuTextOffsetY = (menuBackgroundHeight + textSize)/2;
 
-            canvas.drawText(menuTextString.get(i), menuTextOffsetX + TEXT_OFFSET_X,
+            canvas.drawText(menuText, menuTextOffsetX + TEXT_OFFSET_X,
                     menuTextOffsetY - TEXT_OFFSET_Y, paintMenuText);
         }
     }
@@ -516,24 +557,24 @@ public class SlideView extends View {
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
 
 
-            scaleRatioX = scaleRatioX - distanceX/getWidth();
-            if(scaleRatioX < 0f)scaleRatioX = 0f;
-            if(scaleRatioX > 1f)scaleRatioX = 1f;
+            scaleWholeViewRatioX = scaleWholeViewRatioX - distanceX/getWidth();
+            if(scaleWholeViewRatioX < 0f)scaleWholeViewRatioX = 0f;
+            if(scaleWholeViewRatioX > 1f)scaleWholeViewRatioX = 1f;
 
-//            LLog.d(TAG,"dx " + distanceX + " scale " + s + ":" + scaleRatioX );
+//            LLog.d(TAG,"dx " + distanceX + " scale " + s + ":" + scaleWholeViewRatioX );
 
             //1.(scaleX > hold && 右滑) --> 动画：scaleX = hold:1
-            if(scaleRatioX > SCALE_RATIO_RIGHT_X_THRESHOLD && distanceX < 0 && !isAnimatorStart && Math.abs(scaleRatioX - 1.0f) > 0.1f){
-                isAnimatorStart = true;
-                animator.setFloatValues(SCALE_RATIO_RIGHT_X_THRESHOLD,1f);
-                animator.start();
+            if(scaleWholeViewRatioX > SCALE_RATIO_RIGHT_X_THRESHOLD && distanceX < 0 && !isWholeViewAnimatorStart && Math.abs(scaleWholeViewRatioX - 1.0f) > 0.1f){
+                isWholeViewAnimatorStart = true;
+                wholeViewAnimator.setFloatValues(SCALE_RATIO_RIGHT_X_THRESHOLD,1f);
+                wholeViewAnimator.start();
                 //确认删除的标志位取消
                 isMenuDeleted = false;
-            }else  if(scaleRatioX < SCALE_RATIO_LEFT_X_THRESHOLD && distanceX > 0 && !isAnimatorStart && Math.abs(scaleRatioX - 0f) > 0.1f){
+            }else  if(scaleWholeViewRatioX < SCALE_RATIO_LEFT_X_THRESHOLD && distanceX > 0 && !isWholeViewAnimatorStart && Math.abs(scaleWholeViewRatioX - 0f) > 0.1f){
             //2.(scaleX < hold && 左滑) --> 动画：scaleX = hold : 0
-                isAnimatorStart = true;
-                animator.setFloatValues(SCALE_RATIO_LEFT_X_THRESHOLD,0f);
-                animator.start();
+                isWholeViewAnimatorStart = true;
+                wholeViewAnimator.setFloatValues(SCALE_RATIO_LEFT_X_THRESHOLD,0f);
+                wholeViewAnimator.start();
                 //确认删除的标志位取消
                 isMenuDeleted = false;
             }else{
@@ -544,7 +585,7 @@ public class SlideView extends View {
 
         public void onLongPress(MotionEvent e) {
 
-            Util.toast("long press");
+            if(!isMenuExpand)Util.toast("long press");
 
         }
 
@@ -560,8 +601,6 @@ public class SlideView extends View {
 
             HashMap<String,Integer> hashMap;
 
-            LLog.d(TAG,"is deleted " + isMenuDeleted);
-
             //确定点击后继续点击[确定删除]
             if(isMenuDeleted){
 
@@ -573,12 +612,8 @@ public class SlideView extends View {
 
                 if(startX == null || endX == null)throw new ViewConfigException("menuBackgroundStartEndX exception,check its resource");
 
-                LLog.d(TAG,"startX  " + startX + "  endX  " + endX + " e.getX " +e.getX());
-
-
                 if(e.getX() > startX && e.getX() < endX){
                     onClickListener.onClick(R.id.sure_delete);
-                    LLog.d(TAG,"sure delete ");
                 }
                 return false;
             }
@@ -596,7 +631,11 @@ public class SlideView extends View {
                             onClickListener.onClick(R.id.menu_a);
                             //显示是否删除的提示框
                             isMenuDeleted = true;
-                            invalidate();
+                            sureBackgroundAnimator.setDuration(400);
+                            sureBackgroundAnimator.start();
+
+                            sureTextAnimator.setDuration(400);
+                            sureTextAnimator.start();
                             break;
                         case 1:
                             onClickListener.onClick(R.id.menu_b);
@@ -616,18 +655,6 @@ public class SlideView extends View {
         public boolean onDoubleTapEvent(MotionEvent e) {
             return false;
         }
-    }
-
-    public void setTitleText(String titleText){
-        this.titleText = titleText;
-        invalidate();
-    }
-    public void setMenuTextString(String s1,String s2){
-        menuTextString.clear();
-        menuTextString = new ArrayList<>();
-        menuTextString.add(s1);
-        menuTextString.add(s2);
-        invalidate();
     }
 
 
