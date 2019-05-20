@@ -1,4 +1,4 @@
-package demo.com.library;
+package demo.com.library.utils;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -7,6 +7,8 @@ import android.util.TypedValue;
 import android.widget.Toast;
 
 import java.util.List;
+
+import demo.com.library.R;
 
 public class Util {
 

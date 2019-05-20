@@ -1,4 +1,4 @@
-package demo.com.library;
+package demo.com.library.utils;
 
 import android.content.Context;
 

@@ -18,32 +18,32 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import demo.com.library.LLog;
+import demo.com.library.utils.LLog;
 import demo.com.library.R;
-import demo.com.library.Util;
-import demo.com.library.ViewConfigException;
+import demo.com.library.utils.Util;
+import demo.com.library.utils.ViewConfigException;
 
-import static demo.com.library.Constants.IMAGE_MARGIN_START_DEFAULT;
-import static demo.com.library.Constants.IMAGE_SLIDE_LEN_DEFAULT;
-import static demo.com.library.Constants.KEY_X_END;
-import static demo.com.library.Constants.KEY_X_START;
-import static demo.com.library.Constants.MENU_A_BACKGROUND_DEFAULT;
-import static demo.com.library.Constants.MENU_BACKGROUND_ASPECT_DEFAULT;
-import static demo.com.library.Constants.MENU_B_BACKGROUND_DEFAULT;
-import static demo.com.library.Constants.MENU_TEXT_SIZE_DEFAULT;
-import static demo.com.library.Constants.MESSAGE_MARGIN_START_DEFAULT;
-import static demo.com.library.Constants.MESSAGE_SIZE_DEFAULT;
-import static demo.com.library.Constants.MESSAGE_TEXT_DEFAULT;
-import static demo.com.library.Constants.SCALE_RATIO_LEFT_X_THRESHOLD;
-import static demo.com.library.Constants.SCALE_RATIO_RIGHT_X_THRESHOLD;
-import static demo.com.library.Constants.TEXT_COLOR_DEFAULT;
-import static demo.com.library.Constants.TEXT_MAX_RATIO;
-import static demo.com.library.Constants.TEXT_OFFSET_X;
-import static demo.com.library.Constants.TEXT_OFFSET_Y;
-import static demo.com.library.Constants.TITLE_HEIGHT;
-import static demo.com.library.Constants.TITLE_MARGIN_START_DEFAULT;
-import static demo.com.library.Constants.TITLE_SIZE_DEFAULT;
-import static demo.com.library.Constants.TITLE_TEXT_DEFAULT;
+import static demo.com.library.utils.Constants.IMAGE_MARGIN_START_DEFAULT;
+import static demo.com.library.utils.Constants.IMAGE_SLIDE_LEN_DEFAULT;
+import static demo.com.library.utils.Constants.KEY_X_END;
+import static demo.com.library.utils.Constants.KEY_X_START;
+import static demo.com.library.utils.Constants.MENU_A_BACKGROUND_DEFAULT;
+import static demo.com.library.utils.Constants.MENU_BACKGROUND_ASPECT_DEFAULT;
+import static demo.com.library.utils.Constants.MENU_B_BACKGROUND_DEFAULT;
+import static demo.com.library.utils.Constants.MENU_TEXT_SIZE_DEFAULT;
+import static demo.com.library.utils.Constants.MESSAGE_MARGIN_START_DEFAULT;
+import static demo.com.library.utils.Constants.MESSAGE_SIZE_DEFAULT;
+import static demo.com.library.utils.Constants.MESSAGE_TEXT_DEFAULT;
+import static demo.com.library.utils.Constants.SCALE_RATIO_LEFT_X_THRESHOLD;
+import static demo.com.library.utils.Constants.SCALE_RATIO_RIGHT_X_THRESHOLD;
+import static demo.com.library.utils.Constants.TEXT_COLOR_DEFAULT;
+import static demo.com.library.utils.Constants.TEXT_MAX_RATIO;
+import static demo.com.library.utils.Constants.TEXT_OFFSET_X;
+import static demo.com.library.utils.Constants.TEXT_OFFSET_Y;
+import static demo.com.library.utils.Constants.TITLE_HEIGHT;
+import static demo.com.library.utils.Constants.TITLE_MARGIN_START_DEFAULT;
+import static demo.com.library.utils.Constants.TITLE_SIZE_DEFAULT;
+import static demo.com.library.utils.Constants.TITLE_TEXT_DEFAULT;
 
 
 public class SlideView extends View {
@@ -82,9 +82,9 @@ public class SlideView extends View {
     /**
      * 设置点击菜单栏监听 -- 提供给开发者使用
      */
-    SlideViewOnClickListener onClickListener;
-    public void setMenuOnClickListener(SlideViewOnClickListener listener){
-        onClickListener = listener;
+    Listener.OnMenuClickListener onMenuClickListener;
+    public void setMenuOnClickListener(Listener.OnMenuClickListener listener){
+        onMenuClickListener = listener;
     }
     /**
      * 滑动效果的动画
@@ -280,7 +280,7 @@ public class SlideView extends View {
     /**
      * Menu SURE: 确定字符串
      */
-    final String SURE;
+    String SURE;
     /**
      * MENU SURE: 显示确定删除的动画
      */
@@ -325,14 +325,26 @@ public class SlideView extends View {
         invalidate();
     }
 
+    public SlideView(Context context) {
+        super(context);
+    }
+
+    public SlideView(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+        initView(context,attrs);
+    }
+
+    public SlideView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        initView(context, attrs);
+    }
 
     /**
      * View 的初始化
      * @param context 上下文
      * @param attrs 属性集
      */
-    public SlideView(Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
+    private void initView(Context context, @Nullable AttributeSet attrs) {
         //获取attrs 资源
         // 1.图片资源
         TypedArray typedArray = context.obtainStyledAttributes(attrs,R.styleable.SlideView);
@@ -597,7 +609,7 @@ public class SlideView extends View {
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
             //菜单栏展开、开发者设置了监听
-            if(!isMenuExpand || onClickListener == null)return false;
+            if(!isMenuExpand || onMenuClickListener == null)return false;
 
             HashMap<String,Integer> hashMap;
 
@@ -613,7 +625,7 @@ public class SlideView extends View {
                 if(startX == null || endX == null)throw new ViewConfigException("menuBackgroundStartEndX exception,check its resource");
 
                 if(e.getX() > startX && e.getX() < endX){
-                    onClickListener.onClick(R.id.sure_delete);
+                    onMenuClickListener.onClick(R.id.sure_delete);
                 }
                 return false;
             }
@@ -628,7 +640,7 @@ public class SlideView extends View {
                 if( e.getX() > X1 && e.getX() < X2){
                     switch (i){
                         case 0:
-                            onClickListener.onClick(R.id.menu_a);
+                            onMenuClickListener.onClick(R.id.menu_a);
                             //显示是否删除的提示框
                             isMenuDeleted = true;
                             sureBackgroundAnimator.setDuration(400);
@@ -638,7 +650,7 @@ public class SlideView extends View {
                             sureTextAnimator.start();
                             break;
                         case 1:
-                            onClickListener.onClick(R.id.menu_b);
+                            onMenuClickListener.onClick(R.id.menu_b);
                             break;
                     }
                 }
@@ -658,5 +670,9 @@ public class SlideView extends View {
     }
 
 
+    public void setTitleText(String titleText){
+        this.titleText = titleText;
+        invalidate();
+    }
 
 }
