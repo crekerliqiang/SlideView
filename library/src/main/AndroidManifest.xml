@@ -1,2 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="demo.com.library" />
+    package="demo.com.library" >
+
+        <uses-permission android:name="android.permission.VIBRATE"/>
+
+
+</manifest>

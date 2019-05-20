@@ -86,7 +86,7 @@ public class SlideView extends View {
     public void setOnClickListener(Listener.OnMenuClickListener listener){
         onMenuClickListener = listener;
     }
-    /**
+    /**f
      * 滑动效果的动画
      */
     private ObjectAnimator wholeViewAnimator = ObjectAnimator.ofFloat(this,"scaleWholeViewRatioX",1f);
@@ -595,9 +595,9 @@ public class SlideView extends View {
         }
 
         public void onLongPress(MotionEvent e) {
-
-            if(!isMenuExpand)Util.toast("long press");
-
+            if(!isMenuExpand){
+                onMenuClickListenerWork(R.id.long_press);
+            }
         }
 
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
