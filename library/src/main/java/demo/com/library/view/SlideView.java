@@ -18,8 +18,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import demo.com.library.utils.LLog;
 import demo.com.library.R;
+import demo.com.library.utils.LLog;
 import demo.com.library.utils.Util;
 import demo.com.library.utils.ViewConfigException;
 
@@ -83,7 +83,7 @@ public class SlideView extends View {
      * 设置点击菜单栏监听 -- 提供给开发者使用
      */
     Listener.OnMenuClickListener onMenuClickListener;
-    public void setMenuOnClickListener(Listener.OnMenuClickListener listener){
+    public void setOnClickListener(Listener.OnMenuClickListener listener){
         onMenuClickListener = listener;
     }
     /**
@@ -127,7 +127,7 @@ public class SlideView extends View {
     /**
      * Image : image的起始偏移量
      */
-    private float imageMarginStart;
+    private int imageMarginStart;
 
     /**
      * 是否绘制 Image
@@ -383,8 +383,6 @@ public class SlideView extends View {
             this.menuTextSize.add(menuTextSize);
         }
 
-
-
         // 5 Menu b
         menuString = typedArray.getString(R.styleable.SlideView_menu_b_text);
         menuColor = typedArray.getColor(R.styleable.SlideView_menu_b_background,MENU_B_BACKGROUND_DEFAULT);
@@ -402,10 +400,10 @@ public class SlideView extends View {
         //设置动画时间
         wholeViewAnimator.setDuration(500);
         //Title文字规则
-        paintTitleText.setColor(messageTextColor);
+        paintTitleText.setColor(titleTextColor);
         paintTitleText.setTextSize(titleTextSize);
         //Message文字规则
-        paintMessageText.setColor(titleTextColor);
+        paintMessageText.setColor(messageTextColor);
         paintMessageText.setTextSize(messageTextSize);
         //初始化点击监听
         gestureListener = new MyGestureListener();
@@ -681,9 +679,213 @@ public class SlideView extends View {
         else LLog.e(TAG,"warning onMenuClickListener == null");
     }
 
+
+
+
+
+
+
+
+
+    /** Image
+     * set Image source
+     * @param imageSource image source id @drawable/image name
+     */
+    public void setImageBitmap(int imageSource){
+        this.imageSource = imageSource;
+        bitmap = Util.getBitmap(imageSource,imageSlideLength);
+        invalidate();
+    }
+
+    /** Image
+     * set Image Margin Start
+     * @param imageMarginStartDp margin : dp
+     */
+    public void setImageMarginStart(int imageMarginStartDp){
+        if(imageMarginStartDp < 0)return;
+        this.imageMarginStart = Util.dpToPixel(imageMarginStartDp);
+        invalidate();
+    }
+
+    /** Image
+     * 设置Image bitmap  的边长
+     * @param imageSlideLengthDp 边长 : dp
+     */
+    public void setImageSlideLength(int imageSlideLengthDp){
+        if(imageSlideLengthDp < 0)return;
+        imageSlideLength = Util.dpToPixel(imageSlideLengthDp);
+        bitmap = Util.getBitmap(imageSource,imageSlideLength);
+        invalidate();
+    }
+
+    /** Title
+     * set title text
+     * @param titleText title text
+     */
     public void setTitleText(String titleText){
+        if(titleText == null)return;
         this.titleText = titleText;
         invalidate();
     }
+
+    /** Title
+     * set title text size
+     * @param titleTextSizeSp text size : sp
+     */
+    public void setTitleTextSize(int titleTextSizeSp){
+        if(titleTextSizeSp < 0)return;
+        titleTextSize = Util.spToPixel(titleTextSizeSp);
+        paintTitleText.setTextSize(titleTextSize);
+        invalidate();
+    }
+
+    /** Title
+     * set title text color
+     * @param color color
+     */
+    public void setTitleTextColor(int color){
+        titleTextColor = color;
+        paintTitleText.setColor(titleTextColor);
+        invalidate();
+    }
+
+    /** Title
+     * set title margin start
+     * @param titleTextMarginStartDp margin : dp
+     */
+    public void setTitleTextMarginStart(int titleTextMarginStartDp){
+        if(titleTextMarginStartDp < 0)return;
+        this.titleTextMarginStart = titleTextMarginStartDp;
+        invalidate();
+    }
+
+
+
+
+    /** Message
+     * set message text
+     * @param messageText title text
+     */
+    public void setMessageText(String messageText){
+        if(messageText == null)return;
+        this.messageText = messageText;
+        invalidate();
+    }
+
+    /** Message
+     * set message text size
+     * @param messageTextSizeSp text size : sp
+     */
+    public void setMessageTextSize(int messageTextSizeSp){
+        if(messageTextSizeSp < 0)return;
+        messageTextSize = Util.spToPixel(messageTextSizeSp);
+        paintMessageText.setTextSize(messageTextSize);
+        invalidate();
+    }
+
+    /** Message
+     * set message text color
+     * @param color color
+     */
+    public void setMessageTextColor(int color){
+        messageTextColor = color;
+        paintMessageText.setColor(messageTextColor);
+        invalidate();
+    }
+
+    /** Message
+     * set message margin start
+     * @param messageTextMarginStartDp margin : dp
+     */
+    public void setMessageTextMarginStart(int messageTextMarginStartDp){
+        if(messageTextMarginStartDp < 0)return;
+        this.messageTextMarginStart = messageTextMarginStartDp;
+        invalidate();
+    }
+
+    /**
+     * Menu set a color
+     * @param color color
+     */
+    public void setMenuABackgroundColor(int color){
+        menuBackgroundColor.set(0,color);
+        invalidate();
+    }
+
+    /**
+     * Menu set a text
+     * @param text tx
+     */
+    public void setMenuATextString(String text){
+        if(text == null)return;
+        menuTextString.set(0,text);
+        invalidate();
+    }
+
+    /**
+     * Menu a text size
+     * @param sizeSp size
+     */
+    public void setMenuATextSize(int sizeSp){
+        if(sizeSp < 0)return;
+        menuTextSize.set(0,Util.spToPixel(sizeSp));
+        invalidate();
+    }
+
+    /**
+     * Menu  a aspect
+     * @param aspect aspect
+     */
+    public void setMenuABackgroundAspect(float aspect){
+        if(aspect < 0f)return;
+        menuBackgroundAspect.set(0,aspect);
+        invalidate();
+    }
+    /**
+     * Menu set b color
+     * @param color color
+     */
+    public void setMenuBBackgroundColor(int color){
+        menuBackgroundColor.set(1,color);
+        invalidate();
+    }
+
+    /**
+     * Menu set b text
+     * @param text tx
+     */
+    public void setMenuBTextString(String text){
+        if(text == null)return;
+        menuTextString.set(1,text);
+        invalidate();
+    }
+
+
+    /**
+     * Menu b text size
+     * @param sizeSp size
+     */
+    public void setMenuBTextSize(int sizeSp){
+        if(sizeSp < 0)return;
+        menuTextSize.set(0,Util.spToPixel(sizeSp));
+        invalidate();
+    }
+
+    /**
+     * Menu  b aspect
+     * @param aspect aspect
+     */
+    public void setMenuBBackgroundAspect(float aspect){
+        if(aspect < 0f)return;
+        menuBackgroundAspect.set(1,aspect);
+        invalidate();
+    }
+
+    public void setMenuExpandFalse(){
+        isMenuExpand = false;
+        invalidate();
+//        isMenuExpand;
+    }
+
 
 }

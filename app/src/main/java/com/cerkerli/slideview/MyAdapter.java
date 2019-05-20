@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import demo.com.library.view.SlideView;
+
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     private Context context;
@@ -34,11 +36,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-//        public TextView tvItem;
+        public SlideView tvItem;
 //
         public ViewHolder(View itemView) {
             super(itemView);
-//            tvItem = (TextView) itemView.findViewById(R.id.tv_item);
+            tvItem = (SlideView) itemView.findViewById(R.id.slide_view1);
         }
     }
 }

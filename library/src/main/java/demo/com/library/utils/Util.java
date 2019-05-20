@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.util.TypedValue;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import demo.com.library.R;
@@ -15,12 +16,12 @@ public class Util {
     public static void toast(String s){
         Toast.makeText(Library.getContext(),s,Toast.LENGTH_SHORT).show();
     }
-    public static float dpToPixel(float dp) {
-        return  TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
+    public static int dpToPixel(float dp) {
+        return  (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
                 Resources.getSystem().getDisplayMetrics());
     }
-    public static float spToPixel(float sp){
-        return  TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp,
+    public static int spToPixel(float sp){
+        return  (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp,
                 Resources.getSystem().getDisplayMetrics());
     }
     public static Bitmap getBitmap(int id){
@@ -89,4 +90,10 @@ public class Util {
         return sum/list.size();
     }
 
+
+    public static ArrayList<String> setArrayListValue(ArrayList<String> strings, int stringAt,String value){
+        if(strings == null || stringAt >= strings.size())return strings;
+        strings.set(stringAt,value);
+        return strings;
+    }
 }

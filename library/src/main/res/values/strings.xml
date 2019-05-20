@@ -1,8 +1,4 @@
 <resources>
-    <string name="app_name">library</string>
-
-
-
     <!--菜单键-->
     <string name="sure">确定</string>
 

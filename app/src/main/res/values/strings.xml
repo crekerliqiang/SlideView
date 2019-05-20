@@ -5,4 +5,6 @@
     <string name="message">李强：这个问题哪位大佬会，求大腿啊啊啊啊啊啊啊</string>
     <string name="set">设为未读</string>
     <string name="delete">删除</string>
+
+    <string name="button">button</string>
 </resources>
