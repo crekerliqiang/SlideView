@@ -89,18 +89,18 @@ public class SlideView extends View {
     /**
      * 滑动效果的动画
      */
-    ObjectAnimator wholeViewAnimator = ObjectAnimator.ofFloat(this,"scaleWholeViewRatioX",1f);
+    private ObjectAnimator wholeViewAnimator = ObjectAnimator.ofFloat(this,"scaleWholeViewRatioX",1f);
 
     /**
      * 动画是否开始
      */
-    boolean isWholeViewAnimatorStart = false;
+    private boolean isWholeViewAnimatorStart = false;
 
     /**
      * Image Title Message Menu 的 水平方向的缩放比例
      * 同时也是自定义属性动画的参数
      */
-    float scaleWholeViewRatioX = 1.0f;
+    private float scaleWholeViewRatioX = 1.0f;
     public float getScaleWholeViewRatioX() {
         return scaleWholeViewRatioX;
     }
@@ -112,184 +112,184 @@ public class SlideView extends View {
     /**
      * Image : source 用于获取Bitmap
      */
-    int imageSource;
+    private int imageSource;
 
     /**
      * Image: bitmap,get by @ImageSource
      */
-    Bitmap bitmap;
+    private Bitmap bitmap;
 
     /**
      * Image : image的边长
      */
-    int imageSlideLength;
+    private int imageSlideLength;
 
     /**
      * Image : image的起始偏移量
      */
-    float imageMarginStart;
+    private float imageMarginStart;
 
     /**
      * 是否绘制 Image
      * 开发者没有设置 image 时，就不绘制bitmap
      */
-    boolean isDrawBitmap;
+    private boolean isDrawBitmap;
 
     //Title 相关
     /**
      * Title:文本内容
      */
-    String titleText;
+    private String titleText;
 
     /**
      * Title:文本大小
      */
-    int titleTextSize;
+    private int titleTextSize;
 
     /**
      * Title:文本颜色
      */
-    int titleTextColor;
+    private int titleTextColor;
 
     /**
      * Title:文本的起始偏移
      */
-    int titleTextMarginStart;
+    private int titleTextMarginStart;
 
     /**
      * Title: 文本的高度
      */
-    int titleViewHeight;
+    private int titleViewHeight;
 
     /**
      * Title:文字绘制时的起始X位置
      */
-    int titleTextOffsetX;
+    private int titleTextOffsetX;
 
     /**
      * Title:文字绘制时的起始Y位置
      */
-    int titleTextOffsetY;
+    private int titleTextOffsetY;
 
     //Message
     /**
      * Message : 文本内容
      */
-    String messageText;
+    private String messageText;
 
     /**
      * Message : 文本大小
      */
-    int messageTextSize;
+    private int messageTextSize;
 
     /**
      * Message : 文本颜色
      */
-    int messageTextColor;
+    private int messageTextColor;
 
     /**
      * Message : 文本的起始偏移
      */
-    int messageTextMarginStart;
+    private int messageTextMarginStart;
 
     /**
      * Message : 文本的高度
      */
-    int messageViewHeight;
+    private int messageViewHeight;
 
     /**
      * Message : 文字绘制时的起始X位置
      */
-    int messageTextOffsetX;
+    private int messageTextOffsetX;
 
     /**
      * Message : 文字绘制时的起始X位置
      */
-    int messageTextOffsetY;
+    private int messageTextOffsetY;
 
 
     //滑动菜单区域
     /**
      * Menu : 菜单的文字 X 轴绘制位置
      */
-    int menuTextOffsetX;
+    private int menuTextOffsetX;
 
     /**
      * Menu : 菜单的文字 Y 轴绘制位置
      */
-    int menuTextOffsetY;
+    private int menuTextOffsetY;
 
     /**
      * Menu : 所有菜单的背景 X 轴绘制的起始位置
      */
-    List<Integer> menuBackgroundOffsetX = new ArrayList<>();
+    private List<Integer> menuBackgroundOffsetX = new ArrayList<>();
 
     /**
      * 存储每一个菜单背景的起始值的X轴的大小
      */
-    List<HashMap<String,Integer>> menuBackgroundStartEndX = new ArrayList<>();
+    private List<HashMap<String,Integer>> menuBackgroundStartEndX = new ArrayList<>();
 
     /**
      * Menu : 每个菜单背景的宽度
      */
-    List<Integer> menuBackgroundWidthList = new ArrayList<>();
+    private List<Integer> menuBackgroundWidthList = new ArrayList<>();
 
     /**
      * Menu : 菜单的背景 X 方向已经使用了的宽度
      */
-    int menuBackgroundWidthUsed = 0;
+    private int menuBackgroundWidthUsed = 0;
 
     /**
      * Menu : 所有 菜单背景的平均宽度
      */
-    int menuBackgroundWidthAverage;
+    private int menuBackgroundWidthAverage;
     /**
      * Menu : 菜单背景的高度
      */
-    int menuBackgroundHeight;
+    private int menuBackgroundHeight;
 
     /**
      * Menu : 菜单是否是展开状态，用于判断点击事件
      */
-    boolean isMenuExpand = false;
+    private boolean isMenuExpand = false;
 
     /**
      * Menu : 所有菜单的文本内容
      */
-    List<String> menuTextString = new ArrayList<>();
+    private List<String> menuTextString = new ArrayList<>();
 
     /**
      * Menu : 所有菜单的背景颜色
      */
-    List<Integer> menuBackgroundColor = new ArrayList<>();
+    private List<Integer> menuBackgroundColor = new ArrayList<>();
 
     /**
      * Menu : 所有菜单背景的宽高比
      */
-    List<Float> menuBackgroundAspect = new ArrayList<>();
+    private List<Float> menuBackgroundAspect = new ArrayList<>();
 
     /**
      * Menu : 所有菜单的文字大小
      */
-    List<Integer> menuTextSize = new ArrayList<>();
+    private List<Integer> menuTextSize = new ArrayList<>();
 
     /**
      * Menu SURE: 确认删除标志位
      */
-    boolean isMenuDeleted = false;
+    private boolean isMenuDeleted = false;
     /**
      * Menu SURE: 确定字符串
      */
-    String SURE;
+    private String SURE;
     /**
      * MENU SURE: 显示确定删除的动画
      */
-    ObjectAnimator sureBackgroundAnimator =  ObjectAnimator.ofFloat(this,"scaleSureBackgroundViewRatioX",1f);
+    private ObjectAnimator sureBackgroundAnimator =  ObjectAnimator.ofFloat(this,"scaleSureBackgroundViewRatioX",1f);
 
     /**
      * Menu SURE : 动画的缩放参数
      */
-    float scaleSureBackgroundViewRatioX = 1f;
+    private float scaleSureBackgroundViewRatioX = 1f;
 
     /**
      * scaleSureBackgroundViewRatioX get 方法
@@ -310,12 +310,12 @@ public class SlideView extends View {
     /**
      * Menu SURE : 显示文本的动画
      */
-    ObjectAnimator sureTextAnimator =  ObjectAnimator.ofFloat(this,"scaleSureTextRatioX",0f);
+    private ObjectAnimator sureTextAnimator =  ObjectAnimator.ofFloat(this,"scaleSureTextRatioX",0f);
 
     /**
      * Menu SURE : 显示文本的
      */
-    float scaleSureTextRatioX = 0f;
+    private float scaleSureTextRatioX = 0f;
     public float getSscaleSureTextRatioX() {
         return scaleSureTextRatioX;
     }
@@ -589,6 +589,7 @@ public class SlideView extends View {
                 wholeViewAnimator.start();
                 //确认删除的标志位取消
                 isMenuDeleted = false;
+
             }else{
                 invalidate();
             }
@@ -608,8 +609,9 @@ public class SlideView extends View {
         //确定是单击
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
-            //菜单栏展开、开发者设置了监听
-            if(!isMenuExpand || onMenuClickListener == null)return false;
+
+            //菜单栏展开
+            if(!isMenuExpand)return false;
 
             HashMap<String,Integer> hashMap;
 
@@ -625,7 +627,8 @@ public class SlideView extends View {
                 if(startX == null || endX == null)throw new ViewConfigException("menuBackgroundStartEndX exception,check its resource");
 
                 if(e.getX() > startX && e.getX() < endX){
-                    onMenuClickListener.onClick(R.id.sure_delete);
+                    //开发者设置了监听
+                    onMenuClickListenerWork(R.id.sure_delete);
                 }
                 return false;
             }
@@ -640,7 +643,7 @@ public class SlideView extends View {
                 if( e.getX() > X1 && e.getX() < X2){
                     switch (i){
                         case 0:
-                            onMenuClickListener.onClick(R.id.menu_a);
+                            onMenuClickListenerWork(R.id.menu_a);
                             //显示是否删除的提示框
                             isMenuDeleted = true;
                             sureBackgroundAnimator.setDuration(400);
@@ -650,7 +653,7 @@ public class SlideView extends View {
                             sureTextAnimator.start();
                             break;
                         case 1:
-                            onMenuClickListener.onClick(R.id.menu_b);
+                            onMenuClickListenerWork(R.id.menu_b);
                             break;
                     }
                 }
@@ -669,6 +672,14 @@ public class SlideView extends View {
         }
     }
 
+    /**
+     * 设置点击事件
+     * @param id
+     */
+    private void onMenuClickListenerWork(int id){
+        if(onMenuClickListener != null)onMenuClickListener.onClick(id);
+        else LLog.e(TAG,"warning onMenuClickListener == null");
+    }
 
     public void setTitleText(String titleText){
         this.titleText = titleText;
