@@ -47,7 +47,7 @@
         app:menu_b_background="@color/colorGray"
         app:menu_b_text="@string/set"
         app:menu_b_text_size="20sp"
-        app:menu_b_aspect="1.9999"
+        app:menu_b_aspect="1.2"
         />
     <!--<Button-->
         <!--android:layout_width="wrap_content"-->

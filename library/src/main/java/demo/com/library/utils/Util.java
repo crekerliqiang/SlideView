@@ -75,6 +75,9 @@ public class Util {
     public static boolean isFloatEqual(float src,float dest){
         return Math.abs(src - dest) < 0.000001f;
     }
+    public static boolean isFloatBigger(float src,float dest){
+        return (src - dest) > 0.000001f;
+    }
 
     /**
      * 获取 Integer List 中所有List的平均值

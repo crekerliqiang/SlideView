@@ -566,7 +566,6 @@ public class SlideView extends View {
         //滑动
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
 
-
             scaleWholeViewRatioX = scaleWholeViewRatioX - distanceX/getWidth();
             if(scaleWholeViewRatioX < 0f)scaleWholeViewRatioX = 0f;
             if(scaleWholeViewRatioX > 1f)scaleWholeViewRatioX = 1f;
@@ -574,20 +573,13 @@ public class SlideView extends View {
 //            LLog.d(TAG,"dx " + distanceX + " scale " + s + ":" + scaleWholeViewRatioX );
 
             //1.(scaleX > hold && 右滑) --> 动画：scaleX = hold:1
-            if(scaleWholeViewRatioX > SCALE_RATIO_RIGHT_X_THRESHOLD && distanceX < 0 && !isWholeViewAnimatorStart && Math.abs(scaleWholeViewRatioX - 1.0f) > 0.1f){
-                isWholeViewAnimatorStart = true;
-                wholeViewAnimator.setFloatValues(SCALE_RATIO_RIGHT_X_THRESHOLD,1f);
-                wholeViewAnimator.start();
-                //确认删除的标志位取消
-                isMenuDeleted = false;
-            }else  if(scaleWholeViewRatioX < SCALE_RATIO_LEFT_X_THRESHOLD && distanceX > 0 && !isWholeViewAnimatorStart && Math.abs(scaleWholeViewRatioX - 0f) > 0.1f){
+            if(scaleWholeViewRatioX > SCALE_RATIO_RIGHT_X_THRESHOLD && distanceX < 0 &&
+                    !isWholeViewAnimatorStart ){
+                menuShrink();
+            }else  if(scaleWholeViewRatioX < SCALE_RATIO_LEFT_X_THRESHOLD && distanceX > 0
+                    && !isWholeViewAnimatorStart ){
             //2.(scaleX < hold && 左滑) --> 动画：scaleX = hold : 0
-                isWholeViewAnimatorStart = true;
-                wholeViewAnimator.setFloatValues(SCALE_RATIO_LEFT_X_THRESHOLD,0f);
-                wholeViewAnimator.start();
-                //确认删除的标志位取消
-                isMenuDeleted = false;
-
+                menuExpand();
             }else{
                 invalidate();
             }
@@ -678,15 +670,27 @@ public class SlideView extends View {
         if(onMenuClickListener != null)onMenuClickListener.onClick(id);
         else LLog.e(TAG,"warning onMenuClickListener == null");
     }
+    /**
+     * 收缩菜单
+     */
+    public void menuShrink(){
+        wholeViewAnimator.setFloatValues(SCALE_RATIO_RIGHT_X_THRESHOLD,1f);
+        wholeViewAnimator.start();
+        isWholeViewAnimatorStart = true;
+        //确认删除的标志位取消
+        isMenuDeleted = false;
+    }
 
-
-
-
-
-
-
-
-
+    /**
+     * 展开菜单
+     */
+    public void menuExpand(){
+        wholeViewAnimator.setFloatValues(SCALE_RATIO_LEFT_X_THRESHOLD,0f);
+        wholeViewAnimator.start();
+        isWholeViewAnimatorStart = true;
+        //确认删除的标志位取消
+        isMenuDeleted = false;
+    }
     /** Image
      * set Image source
      * @param imageSource image source id @drawable/image name
@@ -884,7 +888,6 @@ public class SlideView extends View {
     public void setMenuExpandFalse(){
         isMenuExpand = false;
         invalidate();
-//        isMenuExpand;
     }
 
 

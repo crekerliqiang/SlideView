@@ -11,7 +11,14 @@ public class VibratorLib {
      * 手机震动
      * @param time 时间
      */
-    public static void vibrate(long time){
+    private static void vibrate(long time){
         vibrator.vibrate(time);
     }
+    public static void vibrateShort(){
+        vibrate(50);
+    }
+    public static void vibrateLong(){
+        vibrate(500);
+    }
+
 }

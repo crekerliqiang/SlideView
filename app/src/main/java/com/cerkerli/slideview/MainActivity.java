@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.long_press:
                         Util.toast("长按");
-                        VibratorLib.vibrate(50);
+                        VibratorLib.vibrateShort();
                         break;
                 }
             }
