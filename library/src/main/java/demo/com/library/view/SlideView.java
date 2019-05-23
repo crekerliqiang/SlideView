@@ -653,6 +653,9 @@ public class SlideView extends View {
 
         @Override
         public boolean onDoubleTap(MotionEvent e) {
+            if(!isMenuExpand){
+                onMenuClickListenerWork(R.id.double_click);
+            }
             return false;
         }
 
@@ -674,22 +677,28 @@ public class SlideView extends View {
      * 收缩菜单
      */
     public void menuShrink(){
+        if(!isMenuExpand)return;
         wholeViewAnimator.setFloatValues(SCALE_RATIO_RIGHT_X_THRESHOLD,1f);
         wholeViewAnimator.start();
         isWholeViewAnimatorStart = true;
         //确认删除的标志位取消
         isMenuDeleted = false;
+        //菜单展开标志
+        isMenuExpand = false;
     }
 
     /**
      * 展开菜单
      */
     public void menuExpand(){
+        if(isMenuExpand)return;
         wholeViewAnimator.setFloatValues(SCALE_RATIO_LEFT_X_THRESHOLD,0f);
         wholeViewAnimator.start();
         isWholeViewAnimatorStart = true;
         //确认删除的标志位取消
         isMenuDeleted = false;
+        //菜单展开标志
+        isMenuExpand = true;
     }
     /** Image
      * set Image source
@@ -884,11 +893,5 @@ public class SlideView extends View {
         menuBackgroundAspect.set(1,aspect);
         invalidate();
     }
-
-    public void setMenuExpandFalse(){
-        isMenuExpand = false;
-        invalidate();
-    }
-
 
 }

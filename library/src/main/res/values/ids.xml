@@ -7,4 +7,5 @@
 <item name="menu_b" type="id"/>
 <item name="sure_delete" type="id"/>
 <item name="long_press" type="id"/>
+<item name="double_click" type="id"/>
 </resources>

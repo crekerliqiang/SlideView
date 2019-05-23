@@ -8,14 +8,6 @@
     tools:context=".MainActivity">
 
 
-
-    <!--<android.support.v7.widget.RecyclerView-->
-        <!--android:id="@+id/rv_main"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--/>-->
-
-
     <demo.com.library.view.SlideView
         android:id="@+id/slide_view1"
         android:layout_width="wrap_content"
@@ -24,6 +16,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@color/colorBackground"
 
         app:image_src="@drawable/crekerli_pig"
         app:image_margin_start="10dp"
@@ -49,14 +42,5 @@
         app:menu_b_text_size="20sp"
         app:menu_b_aspect="1.2"
         />
-    <!--<Button-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--android:id="@+id/button"-->
-        <!--android:text="@string/button"-->
 
-        <!--/>-->
 </android.support.constraint.ConstraintLayout>

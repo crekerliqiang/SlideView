@@ -2,7 +2,6 @@ package com.cerkerli.slideview;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 
 import demo.com.library.utils.Util;
 import demo.com.library.utils.VibratorLib;
@@ -11,18 +10,12 @@ import demo.com.library.view.SlideView;
 
 public class MainActivity extends AppCompatActivity {
 
-    private RecyclerView mRecyclerView;
-    private MyAdapter mMyAdapter;
-
-    private boolean USE = true;
-
     SlideView view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         view = findViewById(R.id.slide_view1);
         view.setOnClickListener(new Listener.OnMenuClickListener() {
             @Override
@@ -41,6 +34,9 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.long_press:
                         Util.toast("长按");
                         VibratorLib.vibrateShort();
+                        break;
+                    case R.id.double_click:
+                        Util.toast("双击");
                         break;
                 }
             }
