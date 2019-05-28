@@ -4,6 +4,25 @@
 # 前言
 - 最近经常交替使用Android和iOS手机。对于两个系统，从我们常用的列表来看，Android一般的列表菜单是通过长按出来的，而iOS是通过滑动出现的。比如我们常用的微信，对于Android版本，长按某个聊天好友，会弹出 `标为未读，置顶聊天，删除聊天`选项；对于iOS的版本，右滑，会显示出`标为未读，删除`选项
 
+# HOW TO USE
+
+```
+allprojects {
+
+        repositories {
+                ...
+                maven { url 'https://jitpack.io' }
+        }
+        
+}
+        
+dependencies {
+
+        implementation 'com.github.crekerliqiang:SlideView:v0.1.1'
+        
+}
+```   
+
 ***
 ***
 *---------------------------------我是分割线---------------------------------*
