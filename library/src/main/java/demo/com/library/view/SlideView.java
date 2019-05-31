@@ -7,6 +7,9 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Xfermode;
 import android.support.annotation.Nullable;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.AttributeSet;
@@ -66,6 +69,11 @@ public class SlideView extends View {
      * Paint : 绘制Image的Bitmap
      */
     private Paint paintImageBitmap = new Paint(Paint.ANTI_ALIAS_FLAG);
+    /**
+     * Paint : 绘制Image的Bitmap的背景
+     */
+    private Paint paintImageBitmapBackground = new Paint(Paint.ANTI_ALIAS_FLAG);
+
     /**
      * Paint : 绘制Message的文本
      */
@@ -134,6 +142,10 @@ public class SlideView extends View {
      * 开发者没有设置 image 时，就不绘制bitmap
      */
     private boolean isDrawBitmap;
+    /**
+     * 设置Xformode
+     */
+    private Xfermode xfermode;
 
     //Title 相关
     /**
@@ -359,6 +371,9 @@ public class SlideView extends View {
             isDrawBitmap = true;
         }
         bitmap = Util.getBitmap(imageSource,imageSlideLength);
+        //设置Xformode
+        xfermode = new PorterDuffXfermode(PorterDuff.Mode.SRC_IN);
+
         //2.Title
         titleText = typedArray.getString(R.styleable.SlideView_title_text);
         if(titleText == null)titleText = TITLE_TEXT_DEFAULT;
@@ -499,7 +514,22 @@ public class SlideView extends View {
         //移动
         canvas.translate(menuTextString.size() * menuBackgroundWidthAverage * (scaleWholeViewRatioX - 1f),0);
         //绘制 image
-        if(isDrawBitmap)canvas.drawBitmap(bitmap,imageMarginStart, (getHeight() - bitmap.getHeight())>>1, paintImageBitmap);
+        if(isDrawBitmap){
+            //开启离屏缓冲
+            canvas.saveLayer(null,null,Canvas.ALL_SAVE_FLAG);
+            //绘制背景
+            canvas.drawCircle(imageMarginStart + (bitmap.getWidth()>>1),
+                    getHeight()>>1,bitmap.getWidth()>>1,
+                    paintImageBitmapBackground);
+            paintImageBitmap.setXfermode(xfermode);
+
+            //绘制Image
+            canvas.drawBitmap(bitmap,imageMarginStart, (getHeight() - bitmap.getHeight())>>1, paintImageBitmap);
+
+            //清空以及恢复
+            paintImageBitmap.setXfermode(null);
+            canvas.restore();
+        }
         //绘制 title
         canvas.drawText(titleText,titleTextOffsetX ,titleTextOffsetY , paintTitleText);
         //绘制message
