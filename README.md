@@ -8,19 +8,15 @@
 
 ```
 allprojects {
-
         repositories {
                 ...
                 maven { url 'https://jitpack.io' }
         }
-        
 }
-        
 dependencies {
-
         implementation 'com.github.crekerliqiang:SlideView:v0.1.1'
-        
 }
+
 ```   
 
 ***
