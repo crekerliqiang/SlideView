@@ -17,6 +17,8 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.liqiang.lib.Test;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -357,6 +359,7 @@ public class SlideView extends View {
      * @param attrs 属性集
      */
     private void initView(Context context, @Nullable AttributeSet attrs) {
+        Test.test();
         //获取attrs 资源
         // 1.图片资源
         TypedArray typedArray = context.obtainStyledAttributes(attrs,R.styleable.SlideView);
